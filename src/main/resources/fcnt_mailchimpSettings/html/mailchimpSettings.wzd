@@ -1,0 +1,7 @@
+package fcnt_mailchimpSettings.html
+
+formsetting {
+    label "Mailchimp Settings"
+    types "formsetting"
+    wizard "<ff-mailchimp-settings></ff-mailchimp-settings>"
+}
