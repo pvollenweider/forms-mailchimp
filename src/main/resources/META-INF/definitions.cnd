@@ -2,3 +2,9 @@
 <jmix = 'http://www.jahia.org/jahia/mix/1.0'>
 
 [fcnt:mailchimpSettings] > jnt:content, fcmix:formSetting, mix:title, jmix:droppableContent, jmix:hiddenType
+[fcmix:mailchimpConfiguration] mixin
+ + mailchimpConfiguration (fcnt:mailchimpConfiguration) = fcnt:mailchimpConfiguration
+
+ [fcnt:mailchimpConfiguration] > jnt:content
+  - apiKey (string)
+  - listName (string)

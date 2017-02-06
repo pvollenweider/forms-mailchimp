@@ -22,12 +22,51 @@
         .module('formFactory')
         .directive('ffMailchimpSettings', ['ffTemplateResolver', mailchimpSettings]);
 
-    MailchimpSettingsController.$inject = ['i18nService'];
+    MailchimpSettingsController.$inject = ['contextualData', '$FBUtilService', '$http', '$httpParamSerializer'];
 
-    function MailchimpSettingsController (i18n) {
+    function MailchimpSettingsController (contextualData, $FBU, $http, $httpParamSerializer) {
         var msc = this;
         msc.$onInit = function() {
-            console.log('Mailchimp controller initialized');
-        }
+            var path = ['form' +
+            'Factory', 'mailchimpConfiguration'];
+            $FBU.getNodeFromPath(contextualData.sitePath, path, 'default').then(function(data){
+                if (data != null) {
+                    msc.apiKey = data.properties.apiKey.value;
+                    msc.mailchimpEnabled = msc.apiKey != null;
+                    if (data.properties.listName != null) {
+                        msc.listName = data.properties.listName.value;
+                    }
+                }
+            });
+        };
+
+        msc.onSubmit = function() {
+            var data = {
+                apiKey: msc.apiKey
+            };
+            var req = {
+                url: contextualData.urlBase + contextualData.sitePath + '.saveMailchimpConfiguration.do',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: $httpParamSerializer(data)
+            };
+            $http(req).then(function(response){
+            });
+        };
+
+        msc.updateMailchimpConfiguration = function() {
+            if (!msc.mailchimpEnabled) {
+                msc.apiKey = null;
+                msc.listName = null;
+                var req = {
+                    url: contextualData.urlBase + contextualData.sitePath + '.removeMailchimpConfiguration.do',
+                    method: 'POST'
+                };
+                $http(req).then(function (response) {
+                });
+            }
+        };
     }
 })();
