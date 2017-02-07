@@ -22,10 +22,14 @@
         .module('formFactory')
         .directive('ffMailchimpSettings', ['ffTemplateResolver', mailchimpSettings]);
 
-    MailchimpSettingsController.$inject = ['contextualData', '$FBUtilService', '$http', '$httpParamSerializer'];
+    MailchimpSettingsController.$inject = ['contextualData', '$FBUtilService',
+        '$http', '$httpParamSerializer', 'toaster', 'i18nService', '$q', '$sce'];
 
-    function MailchimpSettingsController (contextualData, $FBU, $http, $httpParamSerializer) {
+    function MailchimpSettingsController (contextualData, $FBU, $http,
+                                          $httpParamSerializer, toaster, i18n, $q, $sce) {
         var msc = this;
+        msc.i18nMessageGetter = i18n.message;
+
         msc.$onInit = function() {
             var path = ['form' +
             'Factory', 'mailchimpConfiguration'];
@@ -33,40 +37,136 @@
                 if (data != null) {
                     msc.apiKey = data.properties.apiKey.value;
                     msc.mailchimpEnabled = msc.apiKey != null;
-                    if (data.properties.listName != null) {
-                        msc.listName = data.properties.listName.value;
+                    if (data.properties.listId != null) {
+                        msc.listId = data.properties.listId.value;
+                    }
+                    if (msc.mailchimpEnabled) {
+                        retrieveLists().then(function(response){
+                            if (response.data.status == 'error') {
+                                toaster.pop({
+                                    type   : 'error',
+                                    title  : i18n.message('ff.mailchimp.message.incorrectApiKey'),
+                                    toastId: 'mscInvalidApiKey',
+                                    timeout: 3000
+                                });
+                                msc.apiKeyValid = false;
+                            } else {
+                                msc.lists = response.data.lists;
+                                if (!(msc.listId in msc.lists)) {
+                                    msc.listId = null;
+                                }
+                                msc.apiKeyValid = true;
+                            }
+                        });
                     }
                 }
             });
         };
 
-        msc.onSubmit = function() {
-            var data = {
-                apiKey: msc.apiKey
-            };
-            var req = {
-                url: contextualData.urlBase + contextualData.sitePath + '.saveMailchimpConfiguration.do',
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: $httpParamSerializer(data)
-            };
-            $http(req).then(function(response){
+        msc.onSubmit = function(key) {
+            var data = {};
+            data[key] = msc[key];
+            performRequest('saveMailchimpConfiguration', data).then(function(){
+                if (key == 'apiKey') {
+                    retrieveLists().then(function(response){
+                        if (response.data.status == 'success') {
+                            toaster.pop({
+                                type   : 'success',
+                                title  : i18n.message('ff.mailchimp.message.apiKeySaved'),
+                                toastId: 'mscApiKeySaved',
+                                timeout: 3000
+                            });
+                            msc.apiKeyValid = true;
+                            msc.lists = response.data.lists;
+                            if (!(msc.listId in msc.lists)) {
+                                msc.listId = null;
+                            }
+                        } else {
+                            toaster.pop({
+                                type   : 'error',
+                                title  : i18n.message('ff.mailchimp.message.incorrectApiKey'),
+                                toastId: 'mscInvalidApiKey',
+                                timeout: 3000
+                            });
+                            msc.apiKeyValid = false;
+                            msc.listId = '';
+                            msc.lists = null;
+                        }
+                    });
+                } else if (key == 'listId') {
+                    toaster.pop({
+                        type   : 'success',
+                        title  : i18n.format('ff.mailchimp.message.listSaved', msc.lists[msc.listId]),
+                        toastId: 'mscListSaved',
+                        timeout: 3000
+                    });
+                }
             });
         };
 
         msc.updateMailchimpConfiguration = function() {
             if (!msc.mailchimpEnabled) {
                 msc.apiKey = null;
-                msc.listName = null;
-                var req = {
-                    url: contextualData.urlBase + contextualData.sitePath + '.removeMailchimpConfiguration.do',
-                    method: 'POST'
-                };
-                $http(req).then(function (response) {
+                msc.listId = null;
+                msc.lists = null;
+                msc.apiKeyValid = false;
+                performRequest('removeMailchimpConfiguration').then(function(){
+                    toaster.pop({
+                        type   : 'success',
+                        title  : i18n.message('ff.mailchimp.message.removedConfiguration'),
+                        toastId: 'mscRemovedConfiguration',
+                        timeout: 3000
+                    });
                 });
             }
         };
+
+        msc.hasLists = function() {
+            return !_.isEmpty(msc.lists);
+        };
+
+        msc.getEmptyListMessage = function() {
+            var link = 'https://' + msc.apiKey.split('-')[1] + '.admin.mailchimp.com/lists/';
+            return $sce.trustAsHtml(i18n.format('ff.mailchimp.message.emptyList', '<a href="' + link + '" target="blank">Mailchimp</a>'));
+        };
+
+        msc.refreshLists = function() {
+            retrieveLists().then(function(response){
+                if (response.data.status == 'success') {
+                    toaster.pop({
+                        type   : 'success',
+                        title  : i18n.message('ff.mailchimp.message.refreshedList'),
+                        toastId: 'mscRefreshedList',
+                        timeout: 3000
+                    });
+                    msc.lists = response.data.lists;
+                }
+            })
+        };
+
+        function retrieveLists () {
+            return $q(function(resolve) {
+                var data = {
+                    apiKey: msc.apiKey
+                };
+                performRequest('retrieveMailchimpLists', data).then(function(response) {
+                    resolve(response);
+                });
+            });
+        }
+
+        function performRequest(action, data) {
+            var req = {
+                url: contextualData.urlBase + contextualData.sitePath + '.' + action + '.do',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            };
+            if (data != null) {
+                req.data = $httpParamSerializer(data)
+            }
+            return $http(req)
+        }
     }
 })();
