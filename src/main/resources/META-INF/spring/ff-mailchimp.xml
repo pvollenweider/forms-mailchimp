@@ -2,8 +2,12 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-    <bean class="org.jahia.modules.ffmailchimp.actions.SaveConfiguration"/>
-    <bean class="org.jahia.modules.ffmailchimp.actions.RemoveConfiguration"/>
+    <bean class="org.jahia.modules.ffmailchimp.actions.SaveConfiguration">
+        <property name="publicationService" ref="jcrPublicationService" />
+    </bean>
+    <bean class="org.jahia.modules.ffmailchimp.actions.RemoveConfiguration">
+        <property name="publicationService" ref="jcrPublicationService" />
+    </bean>
     <bean class="org.jahia.modules.ffmailchimp.actions.RetrieveLists"/>
     <bean class="org.jahia.modules.ffmailchimp.actions.RetrieveListMergeFields"/>
     <bean class="org.jahia.modules.ffmailchimp.actions.SubscribeToMailchimp"/>
