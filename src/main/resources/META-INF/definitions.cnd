@@ -8,3 +8,5 @@
  [fcnt:mailchimpConfiguration] > jnt:content
   - apiKey (string)
   - listId (string)
+
+ [fcnt:mailchimpMapper] > jnt:content, fcmix:prefill, mix:title, jmix:droppableContent, jmix:hiddenType

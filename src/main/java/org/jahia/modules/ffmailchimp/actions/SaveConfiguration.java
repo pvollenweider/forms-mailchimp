@@ -19,29 +19,38 @@ import java.util.Map;
 /**
  * Created by stefan on 2017-02-06.
  */
-public class RemoveMailchimpConfiguration extends Action {
-    private final static Logger logger = LoggerFactory.getLogger(RemoveMailchimpConfiguration.class);
+public class SaveConfiguration extends Action {
+    private final static Logger logger = LoggerFactory.getLogger(SaveConfiguration.class);
 
     @Override
     public ActionResult doExecute(HttpServletRequest httpServletRequest, RenderContext renderContext, Resource resource, JCRSessionWrapper session, Map<String, List<String>> map, URLResolver urlResolver) throws Exception {
         ActionResult actionResult = new ActionResult(HttpServletResponse.SC_OK);
-        JSONObject jsonAnswer = new JSONObject();
 
         JCRNodeWrapper siteNode = resource.getNode();
         JCRNodeWrapper formFactoryFolder;
         if (!siteNode.hasNode("formFactory")) {
-            return actionResult;
+            formFactoryFolder = siteNode.addNode("formFactory", "fcnt:formFactory");
+            session.save();
         } else {
             formFactoryFolder = siteNode.getNode("formFactory");
         }
         if (!formFactoryFolder.isNodeType("fcmix:mailchimpConfiguration")) {
-            return actionResult;
+            formFactoryFolder.addMixin("fcmix:mailchimpConfiguration");
+        }
+        JCRNodeWrapper mailchimpConfigurationNode;
+        if (!formFactoryFolder.hasNode("mailchimpConfiguration")) {
+            mailchimpConfigurationNode = formFactoryFolder.addNode("mailchimpConfiguration", "fcnt:mailchimpConfiguration");
         } else {
-            formFactoryFolder.removeMixin("fcmix:mailchimpConfiguration");
+            mailchimpConfigurationNode = formFactoryFolder.getNode("mailchimpConfiguration");
+        }
+        for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+            String key = entry.getKey();
+            mailchimpConfigurationNode.setProperty(key, entry.getValue().get(0));
         }
         session.save();
+        JSONObject jsonAnswer = new JSONObject();
         jsonAnswer.put("status", "success");
-        jsonAnswer.put("message", "Successfully removed Mailchimp configuration!");
+        jsonAnswer.put("message", "Mailchimp configuration was saved successfully!");
         actionResult.setJson(jsonAnswer);
         return actionResult;
     }

@@ -46,7 +46,7 @@
                         ng-model="msc.listId"
                         ng-required="true"
                         ng-disabled="!msc.hasLists()"
-                        ng-options="listName as id for (listName, id) in msc.lists">
+                        ng-options="id as listName for (id, listName) in msc.lists">
                     <option ng-if="msc.listId == '' || msc.listId == null" value="" message-key="ff.label.mailchimp.placeholder.selectList"></option>
                 </select>
                 <span class="input-group-btn">

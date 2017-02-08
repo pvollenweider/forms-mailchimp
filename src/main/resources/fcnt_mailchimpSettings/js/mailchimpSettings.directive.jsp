@@ -31,8 +31,7 @@
         msc.i18nMessageGetter = i18n.message;
 
         msc.$onInit = function() {
-            var path = ['form' +
-            'Factory', 'mailchimpConfiguration'];
+            var path = ['formFactory', 'mailchimpConfiguration'];
             $FBU.getNodeFromPath(contextualData.sitePath, path, 'default').then(function(data){
                 if (data != null) {
                     msc.apiKey = data.properties.apiKey.value;
@@ -66,7 +65,7 @@
         msc.onSubmit = function(key) {
             var data = {};
             data[key] = msc[key];
-            performRequest('saveMailchimpConfiguration', data).then(function(){
+            performRequest('saveConfiguration', data).then(function(){
                 if (key == 'apiKey') {
                     retrieveLists().then(function(response){
                         if (response.data.status == 'success') {
@@ -110,7 +109,7 @@
                 msc.listId = null;
                 msc.lists = null;
                 msc.apiKeyValid = false;
-                performRequest('removeMailchimpConfiguration').then(function(){
+                performRequest('removeConfiguration').then(function(){
                     toaster.pop({
                         type   : 'success',
                         title  : i18n.message('ff.mailchimp.message.removedConfiguration'),
@@ -149,7 +148,7 @@
                 var data = {
                     apiKey: msc.apiKey
                 };
-                performRequest('retrieveMailchimpLists', data).then(function(response) {
+                performRequest('retrieveLists', data).then(function(response) {
                     resolve(response);
                 });
             });

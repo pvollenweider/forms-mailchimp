@@ -1,0 +1,15 @@
+package fcnt_mailchimpMapper.html
+
+prefill {
+    label "Mailchimp Mapper"
+    type "super"
+    wizard "<ff-mailchimp-mapper view-type='designView'></ff-mailchimp-mapper>"
+    serviceName ""
+    dataKey ""
+    availableDataKeys ""
+
+    properties {
+        hideAfterPrefill "false"
+        makeReadOnlyAfterPrefill "false"
+    }
+}

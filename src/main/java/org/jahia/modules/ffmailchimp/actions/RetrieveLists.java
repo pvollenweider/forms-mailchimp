@@ -24,8 +24,8 @@ import java.util.Map;
 /**
  * Created by stefan on 2017-02-06.
  */
-public class RetrieveMailchimpLists extends Action{
-    private final static Logger logger = LoggerFactory.getLogger(RetrieveMailchimpLists.class);
+public class RetrieveLists extends Action{
+    private final static Logger logger = LoggerFactory.getLogger(RetrieveLists.class);
 
     @Override
     public ActionResult doExecute(HttpServletRequest httpServletRequest, RenderContext renderContext, Resource resource, JCRSessionWrapper session, Map<String, List<String>> map, URLResolver urlResolver) throws Exception {
