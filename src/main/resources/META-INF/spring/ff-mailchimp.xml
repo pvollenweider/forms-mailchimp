@@ -6,4 +6,5 @@
     <bean class="org.jahia.modules.ffmailchimp.actions.RemoveConfiguration"/>
     <bean class="org.jahia.modules.ffmailchimp.actions.RetrieveLists"/>
     <bean class="org.jahia.modules.ffmailchimp.actions.RetrieveListMergeFields"/>
+    <bean class="org.jahia.modules.ffmailchimp.actions.SubscribeToMailchimp"/>
 </beans>

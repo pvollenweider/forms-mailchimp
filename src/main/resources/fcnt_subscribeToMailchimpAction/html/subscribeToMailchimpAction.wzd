@@ -1,0 +1,11 @@
+package fcnt_subscribeToMailchimpAction.html
+
+action {
+    label "Subscribe To Mailchimp"
+    wizard "<ff-subscribe-to-mailchimp view-type='designView'></ff-subscribe-to-mailchimp>"
+    properties {
+        actionname "subscribetomailchimp"
+    }
+    propertiesI18n {
+    }
+}
