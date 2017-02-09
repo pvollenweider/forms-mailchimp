@@ -7,7 +7,7 @@
         return {
             restrict: 'E',
             templateUrl: function(el, attrs) {
-                return ffTemplateResolver.resolveTemplatePath('${formfactory:addFormFactoryModulePath('/form-factory-prefills/mailchimp-mapper', renderContext)}', attrs.viewType);
+                return ffTemplateResolver.resolveTemplatePath('${formfactory:addFormFactoryModulePath('/form-factory-misc-directives/mailchimp-mapper', renderContext)}', attrs.viewType);
             },
             scope:{},
             controller: MailchimpMapperController,
@@ -24,6 +24,7 @@
     var MailchimpMapperController = function(contextualData, $http, $httpParamSerializer,
                                              toaster, i18n, $FBFS) {
         var mcc = this;
+
         mcc.$onInit = function() {
             var req = {
                 url: contextualData.urlBase + contextualData.sitePath + '.retrieveListMergeFields.do',
@@ -35,8 +36,9 @@
             $http(req).then(function(response){
                 if (response.data.status == 'success') {
                     mcc.mergeFields = response.data.results;
+                    if (!_.isEmpty($FBFS.activeInput.miscDirectives['mailchimp-mapper'].tag))
                     for (var i in mcc.mergeFields) {
-                        if (mcc.mergeFields[i].tag == $FBFS.activeInput.name) {
+                        if (mcc.mergeFields[i].tag == $FBFS.activeInput.miscDirectives['mailchimp-mapper'].tag) {
                             mcc.selectedMergeField = mcc.mergeFields[i];
                             break;
                         }
@@ -60,12 +62,7 @@
         };
 
         mcc.mapInput = function() {
-            $FBFS.activeInput.label = mcc.selectedMergeField.name;
-            $FBFS.activeInput.name = mcc.selectedMergeField.tag;
-        };
-
-        mcc.canMapInput = function() {
-            return !_.isEmpty(mcc.selectedMergeField) && mcc.selectedMergeField.tag != $FBFS.activeInput.name;
+            $FBFS.activeInput.miscDirectives['mailchimp-mapper'].tag = mcc.selectedMergeField.tag;
         };
     };
     MailchimpMapperController.$inject = ['contextualData', '$http', '$httpParamSerializer',

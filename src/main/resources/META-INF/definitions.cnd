@@ -9,5 +9,5 @@
   - apiKey (string)
   - listId (string)
 
- [fcnt:mailchimpMapper] > jnt:content, fcmix:prefill, mix:title, jmix:droppableContent, jmix:hiddenType
+ [fcnt:mailchimpMapper] > jnt:content, fcmix:miscDirective, mix:title, jmix:droppableContent, jmix:hiddenType
  [fcnt:subscribeToMailchimpAction]> jnt:content, fcmix:action, mix:title, jmix:droppableContent, jmix:hiddenType
