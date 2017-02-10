@@ -3,7 +3,6 @@ package fcnt_mailchimpMapper.html
 miscDirective {
     label "Mailchimp Mapper"
     wizard "<ff-mailchimp-mapper view-type='designView'></ff-mailchimp-mapper>"
-    namespace "mailchimp"
 
     properties {
         tag ""
