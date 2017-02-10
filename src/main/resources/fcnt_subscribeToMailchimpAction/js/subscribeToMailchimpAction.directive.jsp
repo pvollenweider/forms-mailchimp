@@ -9,9 +9,9 @@
             templateUrl: function(el, attrs) {
                 return ffTemplateResolver.resolveTemplatePath('${formfactory:addFormFactoryModulePath('/form-factory-actions/subscribe-to-mailchimp', renderContext)}', attrs.viewType);
             },
-            scope:{},
             controller: SubscribeToMailchimpController,
             controllerAs: 'stmc',
+            bindToController:true,
             link: linkFunc
         };
 
@@ -21,12 +21,17 @@
         .module('formFactory')
         .directive('ffSubscribeToMailchimp', ['ffTemplateResolver', subscribeToMailchimp]);
 
-    var SubscribeToMailchimpController = function() {
+    var SubscribeToMailchimpController = function($FBFS) {
         var stmc = this;
 
         stmc.$onInit = function () {
-            console.log('Subscribe To Mailchimp Controller Initialized!');
+            stmc.action = $FBFS.activeAction;
+            stmc.steps = $FBFS.getSteps();
         };
+
+        stmc.updateMappedEmailInput = function(name) {
+            $FBFS.activeAction.mappedEmailInput = !_.isEmpty($FBFS.activeAction.mappedEmailInput) && name == $FBFS.activeAction.mappedEmailInput ? '' : name;
+        }
     };
-    SubscribeToMailchimpController.$inject = [];
+    SubscribeToMailchimpController.$inject = ['$FBFormStateService'];
 })();

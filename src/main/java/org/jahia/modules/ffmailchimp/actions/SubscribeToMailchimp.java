@@ -46,7 +46,9 @@ public class SubscribeToMailchimp extends Action {
             String listId = mailchimpConfiguration.getPropertyAsString("listId");
             JCRNodeWrapper formNode = session.getNodeByIdentifier(parameters.get("formId").get(0));
             List<JCRNodeWrapper> stepNodes = JCRContentUtils.getChildrenOfType(formNode, "fcnt:step");
-
+            JCRNodeWrapper actionNode = resource.getNode();
+            String emailInput = actionNode.getNode("mappedEmailInput").getPropertyAsString("jsonValue");
+            String email = null;
             for (JCRNodeWrapper step : stepNodes) {
                 for (Map.Entry<String, List<String>> entry : parameters.entrySet()) {
                     String inputName = entry.getKey();
@@ -69,20 +71,22 @@ public class SubscribeToMailchimp extends Action {
                             if (!StringUtils.isEmpty(value) || isMergeField) {
                                 inputResults.put(input.getPropertyAsString("j:nodename"), value);
                             }
+                            if (inputName.equals(emailInput)) {
+                                email = value;
+                            }
                         }
                     }
                 }
             }
             //Update subscribe/update member in mailchimp
-            //@TODO replace with field in mailchimp configuration that stores the input that will provide this value (email)
-            byte[] emailAsBytes = "ssavu@jahia.com".getBytes("UTF-8");
+            byte[] emailAsBytes = email.getBytes("UTF-8");
             MessageDigest md = MessageDigest.getInstance("MD5");
             String emailMD5Hash = Hex.encodeHexString(md.digest(emailAsBytes));
             String server = apiKey.substring(apiKey.indexOf('-') + 1, apiKey.length());
             StringBuilder entryPointSb = new StringBuilder("https://");
             entryPointSb.append(server).append(".api.mailchimp.com/3.0/lists/{listId}/members/{subscriberHash}");
             JSONObject reqBody = new JSONObject();
-            reqBody.put("email_address", "ssavu@jahia.com")
+            reqBody.put("email_address", email)
                     .put("status_if_new", "subscribed")
                     .put("merge_fields", mailchimpMergeFields)
                     .put("ip_signup", req.getRemoteAddr());
