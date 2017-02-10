@@ -39,6 +39,7 @@
             $http(req).then(function(response){
                 if (ffBucketService.bucket(BUCKET_NAME) === null) {
                     ffBucketService.createBucket(BUCKET_NAME, response.data.results, TRACK_BY);
+                    initBucket();
                 }
                 mcc.mergeFields = angular.copy(ffBucketService.bucket(BUCKET_NAME));
                 var tag = $FBFS.activeInput.miscDirectives['mailchimp-mapper'].tag;
@@ -81,7 +82,17 @@
         };
 
         function initBucket() {
-
+            var steps = $FBFS.getSteps();
+            for (var i = 0; i < steps.length; i++) {
+                var inputs = $FBFS.getInputsFromStep(i);
+                for (var j = 0; j < inputs.length; j++) {
+                    var input = inputs[j];
+                    if (input.miscDirectives !== undefined && input.miscDirectives['mailchimp-mapper']) {
+                        var mapper = input.miscDirectives['mailchimp-mapper'];
+                        ffBucketService.take(BUCKET_NAME, mapper.tag);
+                    }
+                }
+            }
         }
     };
     MailchimpMapperController.$inject = ['contextualData', '$http', '$httpParamSerializer',
