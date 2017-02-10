@@ -30,23 +30,28 @@ public class RetrieveListMergeFields extends Action {
     private static final Logger logger = LoggerFactory.getLogger(RetrieveListMergeFields.class);
     @Override
     public ActionResult doExecute(HttpServletRequest req, RenderContext renderContext, Resource resource, JCRSessionWrapper session, Map<String, List<String>> parameters, URLResolver urlResolver) throws Exception {
-        ActionResult actionResult = new ActionResult(HttpServletResponse.SC_OK);
+        ActionResult actionResult;
         JSONObject jsonAnswer = new JSONObject();
-        getMergeFields : try {
+        try {
+            actionResult = new ActionResult(HttpServletResponse.SC_OK);
             JCRNodeWrapper mailchimpConfiguration = resource.getNode().getNode("formFactory/mailchimpConfiguration");
             String apiKey = mailchimpConfiguration.getPropertyAsString("apiKey");
             String listId = mailchimpConfiguration.getPropertyAsString("listId");
             if (StringUtils.isEmpty(apiKey)) {
+                actionResult = new ActionResult(HttpServletResponse.SC_BAD_REQUEST);
                 jsonAnswer.put("status", "error");
                 jsonAnswer.put("message", "Mailchimp API key is not set");
                 jsonAnswer.put("errorType", "missingApiKey");
-                break getMergeFields;
+                actionResult.setJson(jsonAnswer);
+                return actionResult;
             }
             if (StringUtils.isEmpty(listId)) {
+                actionResult = new ActionResult(HttpServletResponse.SC_BAD_REQUEST);
                 jsonAnswer.put("status", "error");
                 jsonAnswer.put("message", "Mailchimp list ID is not set");
                 jsonAnswer.put("errorType", "missingListId");
-                break getMergeFields;
+                actionResult.setJson(jsonAnswer);
+                return actionResult;
             }
             String server = apiKey.substring(apiKey.indexOf('-') + 1, apiKey.length());
             StringBuilder entryPointSb = new StringBuilder("https://");
@@ -58,20 +63,25 @@ public class RetrieveListMergeFields extends Action {
             JSONArray mergeFields = response.getBody().getObject().getJSONArray("merge_fields");
             jsonAnswer.put("results", mergeFields);
             jsonAnswer.put("status", "success");
-            jsonAnswer.put("message", "Successfully retrieved available merge fields");
+            jsonAnswer.put("message", "Successfully retrieved available mailchimp merge fields");
+            actionResult.setJson(jsonAnswer);
             logger.info("Successfully retrieved available merge fields");
+            return actionResult;
         } catch (RepositoryException e) {
+            actionResult = new ActionResult(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             jsonAnswer.put("status", "error");
             jsonAnswer.put("errorType", "invalidConfiguration");
             jsonAnswer.put("message", "Mailchimp configuration does not exist");
+            actionResult.setJson(jsonAnswer);
             logger.error("No mailchimp configuration node found: " + e.getMessage(), e);
+            return actionResult;
         } catch (UnirestException e) {
+            actionResult = new ActionResult(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             jsonAnswer.put("status", "error");
             jsonAnswer.put("message", e.getMessage());
             jsonAnswer.put("errorType", "invalidApiKey");
-            logger.error("Request to retrieve merge fields failed: " + e.getMessage(), e);
-        } finally {
             actionResult.setJson(jsonAnswer);
+            logger.error("Request to retrieve mailchimp merge fields failed: " + e.getMessage(), e);
             return actionResult;
         }
     }

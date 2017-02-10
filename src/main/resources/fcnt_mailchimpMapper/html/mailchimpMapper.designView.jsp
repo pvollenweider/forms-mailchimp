@@ -7,7 +7,8 @@
             <select class="form-control"
                     name="selectList"
                     ng-model="mcc.selectedMergeField"
-                    ng-change="mcc.mapInput()"
+                    ng-click="oldValue = mcc.selectedMergeField"
+                    ng-change="mcc.mapInput(oldValue)"
                     ng-disabled="!mcc.hasMergeFields()"
                     ng-options="mergeField as mergeField.name for mergeField in mcc.mergeFields track by mergeField.tag">
             </select>

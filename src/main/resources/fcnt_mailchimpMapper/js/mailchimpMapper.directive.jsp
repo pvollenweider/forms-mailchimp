@@ -22,7 +22,9 @@
         .directive('ffMailchimpMapper', ['ffTemplateResolver', mailchimpMapper]);
 
     var MailchimpMapperController = function(contextualData, $http, $httpParamSerializer,
-                                             toaster, i18n, $FBFS) {
+                                             toaster, i18n, $FBFS, ffBucketService) {
+        var BUCKET_NAME = "mailChimpBucket";
+        var TRACK_BY = "tag";
         var mcc = this;
 
         mcc.$onInit = function() {
@@ -33,27 +35,38 @@
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             };
+
             $http(req).then(function(response){
-                if (response.data.status == 'success') {
-                    mcc.mergeFields = response.data.results;
-                    if (!_.isEmpty($FBFS.activeInput.miscDirectives['mailchimp-mapper'].tag))
-                    for (var i in mcc.mergeFields) {
-                        if (mcc.mergeFields[i].tag == $FBFS.activeInput.miscDirectives['mailchimp-mapper'].tag) {
-                            mcc.selectedMergeField = mcc.mergeFields[i];
-                            break;
+                if (ffBucketService.bucket(BUCKET_NAME) === null) {
+                    ffBucketService.createBucket(BUCKET_NAME, response.data.results, TRACK_BY);
+                }
+                mcc.mergeFields = angular.copy(ffBucketService.bucket(BUCKET_NAME));
+                var tag = $FBFS.activeInput.miscDirectives['mailchimp-mapper'].tag;
+
+                if (!_.isEmpty(tag))
+                    var currentValue = ffBucketService.takenValue(BUCKET_NAME, tag);
+                    if (currentValue === undefined) {
+                        for (var i in mcc.mergeFields) {
+                            if (mcc.mergeFields[i].tag == tag) {
+                                mcc.selectedMergeField = ffBucketService.take(BUCKET_NAME, mcc.mergeFields[i].tag);
+                                break;
+                            }
                         }
                     }
-                    mcc.invalidConfiguration = false;
-                } else {
-                    var message = 'ff.mailchimp.message.toast.' + response.data.errorType;
-                    toaster.pop({
-                        type   : 'error',
-                        title  : i18n.message(message),
-                        toastId: 'mccError' + response.data.errorType,
-                        timeout: 3000
-                    });
-                    mcc.invalidConfiguration = true;
-                }
+                    else {
+                        mcc.mergeFields.push(currentValue);
+                        mcc.selectedMergeField = currentValue;
+                    }
+                mcc.invalidConfiguration = false;
+            }, function (error) {
+                var message = 'ff.mailchimp.message.toast.' + error.data.errorType;
+                toaster.pop({
+                    type   : 'error',
+                    title  : i18n.message(message),
+                    toastId: 'mccError' + error.data.errorType,
+                    timeout: 3000
+                });
+                mcc.invalidConfiguration = true;
             });
         };
 
@@ -61,10 +74,16 @@
             return !_.isEmpty(mcc.mergeFields);
         };
 
-        mcc.mapInput = function() {
+        mcc.mapInput = function(field) {
             $FBFS.activeInput.miscDirectives['mailchimp-mapper'].tag = mcc.selectedMergeField.tag;
+            ffBucketService.take(BUCKET_NAME, mcc.selectedMergeField.tag);
+            ffBucketService.put(BUCKET_NAME, field);
         };
+
+        function initBucket() {
+
+        }
     };
     MailchimpMapperController.$inject = ['contextualData', '$http', '$httpParamSerializer',
-        'toaster', 'i18nService', '$FBFormStateService'];
+        'toaster', 'i18nService', '$FBFormStateService', 'ffBucketService'];
 })();
