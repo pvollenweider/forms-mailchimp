@@ -1,16 +1,27 @@
 package org.jahia.modules.ffmailchimp.actions;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import org.apache.commons.lang.StringUtils;
 import org.jahia.bin.Action;
 import org.jahia.bin.ActionResult;
+import org.jahia.services.content.JCRContentUtils;
+import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.render.Resource;
 import org.jahia.services.render.URLResolver;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.codec.binary.Hex;
+import java.security.MessageDigest;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +34,84 @@ public class SubscribeToMailchimp extends Action {
     @Override
     public ActionResult doExecute(HttpServletRequest req, RenderContext renderContext, Resource resource, JCRSessionWrapper session, Map<String, List<String>> parameters, URLResolver urlResolver) throws Exception {
         ActionResult actionResult = new ActionResult(HttpServletResponse.SC_OK);
+        JSONObject jsonAnswer = new JSONObject();
+        //Get mailchimp configuration
+        JCRNodeWrapper formFactoryNode = renderContext.getSite().getNode("formFactory");
+        JCRNodeWrapper mailchimpConfiguration;
+        JSONObject mailchimpMergeFields = new JSONObject();
+        Map<String, String> inputResults = new LinkedHashMap<>();
+        if (formFactoryNode.isNodeType("fcmix:mailchimpConfiguration")) {
+            mailchimpConfiguration = formFactoryNode.getNode("mailchimpConfiguration");
+            String apiKey = mailchimpConfiguration.getPropertyAsString("apiKey");
+            String listId = mailchimpConfiguration.getPropertyAsString("listId");
+            JCRNodeWrapper formNode = session.getNodeByIdentifier(parameters.get("formId").get(0));
+            List<JCRNodeWrapper> stepNodes = JCRContentUtils.getChildrenOfType(formNode, "fcnt:step");
+
+            for (JCRNodeWrapper step : stepNodes) {
+                for (Map.Entry<String, List<String>> entry : parameters.entrySet()) {
+                    String inputName = entry.getKey();
+                    if (step.hasNode(inputName)) {
+                        JCRNodeWrapper input = step.getNode(inputName);
+                        boolean isMergeField = false;
+                        List values = entry.getValue();
+                        String value = values.get(0).toString();
+                        if (values.size() == 1) {
+                            if (input.hasNode("miscDirectives")) {
+                                JCRNodeWrapper miscDirectives = input.getNode("miscDirectives");
+                                if (miscDirectives.hasNode("mailchimp-mapper")) {
+                                    JCRNodeWrapper miscDirective = miscDirectives.getNode("mailchimp-mapper");
+                                    if (miscDirective.getPropertyAsString("j:nodename").equals("mailchimp-mapper")) {
+                                        mailchimpMergeFields.put(miscDirective.getNode("tag").getPropertyAsString("jsonValue"), value);
+                                        isMergeField = true;
+                                    }
+                                }
+                            }
+                            if (!StringUtils.isEmpty(value) || isMergeField) {
+                                inputResults.put(input.getPropertyAsString("j:nodename"), value);
+                            }
+                        }
+                    }
+                }
+            }
+            //Update subscribe/update member in mailchimp
+            //@TODO replace with field in mailchimp configuration that stores the input that will provide this value (email)
+            byte[] emailAsBytes = "ssavu@jahia.com".getBytes("UTF-8");
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            String emailMD5Hash = Hex.encodeHexString(md.digest(emailAsBytes));
+            String server = apiKey.substring(apiKey.indexOf('-') + 1, apiKey.length());
+            StringBuilder entryPointSb = new StringBuilder("https://");
+            entryPointSb.append(server).append(".api.mailchimp.com/3.0/lists/{listId}/members/{subscriberHash}");
+            JSONObject reqBody = new JSONObject();
+            reqBody.put("email_address", "ssavu@jahia.com")
+                    .put("status_if_new", "subscribed")
+                    .put("merge_fields", mailchimpMergeFields)
+                    .put("ip_signup", req.getRemoteAddr());
+            try {
+                HttpResponse<JsonNode> response = Unirest.put(entryPointSb.toString())
+                        .basicAuth(null, apiKey)
+                        .header("Content-Type", "application/json")
+                        .routeParam("listId", listId)
+                        .routeParam("subscriberHash", emailMD5Hash)
+                        .body(reqBody.toString())
+                        .asJson();
+                jsonAnswer.put("status", "success");
+                jsonAnswer.put("actionName", "subscribeToMailchimp");
+                JSONObject results = new JSONObject();
+                results.put("request", response.getBody().getObject());
+                results.put("submission", inputResults);
+                jsonAnswer.put("results", results);
+                actionResult.setJson(results);
+            } catch (UnirestException e) {
+                jsonAnswer.put("status", "error");
+                jsonAnswer.put("message", e.getMessage());
+                return new ActionResult(HttpServletResponse.SC_OK, null, jsonAnswer);
+            }
+        } else {
+            jsonAnswer.put("status", "error");
+            jsonAnswer.put("message", "Mailchimp configuration does not exist on this site");
+            logger.error("Failed to execute Subscribe to Mailchimp due to missing mailchimp configuration");
+        }
+        actionResult.setJson(jsonAnswer);
         return actionResult;
     }
 }
