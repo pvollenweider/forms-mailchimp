@@ -81,6 +81,12 @@
             ffBucketService.put(BUCKET_NAME, field);
         };
 
+        mcc.reset = function() {
+            ffBucketService.put(BUCKET_NAME, mcc.selectedMergeField);
+            mcc.selectedMergeField = undefined;
+            $FBFS.activeInput.miscDirectives['mailchimp-mapper'].tag = "";
+        };
+
         function initBucket() {
             var steps = $FBFS.getSteps();
             for (var i = 0; i < steps.length; i++) {
