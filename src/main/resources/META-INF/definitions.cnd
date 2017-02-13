@@ -5,9 +5,14 @@
 [fcmix:mailchimpConfiguration] mixin
  + mailchimpConfiguration (fcnt:mailchimpConfiguration) = fcnt:mailchimpConfiguration
 
- [fcnt:mailchimpConfiguration] > jnt:content
+ [fcnt:mailchimpConfiguration] > jnt:content, fcmix:onSubmissionMappings
   - apiKey (string)
   - listId (string)
+
+ [fcmix:onSubmissionMappings] mixin
+  - server (boolean)
+  - referrer (boolean)
+  - formId (boolean)
 
  [fcnt:mailchimpMapper] > jnt:content, fcmix:miscDirective, mix:title, jmix:droppableContent, jmix:hiddenType
  [fcnt:subscribeToMailchimpAction]> jnt:content, fcmix:action, mix:title, jmix:droppableContent, jmix:hiddenType

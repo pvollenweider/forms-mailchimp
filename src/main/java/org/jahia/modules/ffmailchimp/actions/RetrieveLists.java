@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,9 +45,47 @@ public class RetrieveLists extends Action{
                 JSONObject lists = new JSONObject();
                 if (results != null) {
                     JSONArray rawLists = results.getJSONArray("lists");
+                    //Update path for Merge Fields
+                    entryPointSb.append("/{listId}/merge-fields");
                     for (int i = 0; i < rawLists.length(); i++) {
                         JSONObject list = (JSONObject)rawLists.get(i);
                         lists.put(list.getString("id"), list.getString("name"));
+                        //Check if we need to add meta data merge fields
+                        HttpResponse<JsonNode> mergeFieldsResponse = Unirest.get(entryPointSb.toString())
+                                .basicAuth(null, apiKey)
+                                .routeParam("listId", list.getString("id"))
+                                .asJson();
+                        JSONArray mergeFields = mergeFieldsResponse.getBody().getObject().getJSONArray("merge_fields");
+                        Map<String, String> mergeFieldExistsMap = new LinkedHashMap<>();
+                        mergeFieldExistsMap.put("FFSERVER", "Server Address");
+                        mergeFieldExistsMap.put("FFREFERRER", "Referrer");
+                        mergeFieldExistsMap.put("FFFORMID", "Form Identifier");
+                        //Check which merge fields do not exist on the current list
+                        for (int j = 0; j < mergeFields.length(); j++) {
+                            String mergeTag = new JSONObject(mergeFields.getString(j)).getString("tag");
+                            if (mergeFieldExistsMap.get(mergeTag) != null) {
+                                mergeFieldExistsMap.remove(mergeFields.get(j));
+                            }
+                            if (mergeFieldExistsMap.size() == 0) {
+                                break;
+                            }
+                        }
+                        if (mergeFieldExistsMap.size() > 0) {
+                            //Add meta data merge fields that don't exist on this list.
+                            for (Map.Entry<String, String> entry : mergeFieldExistsMap.entrySet()) {
+                                JSONObject reqBody = new JSONObject();
+                                reqBody.put("tag", entry.getKey())
+                                        .put("name", entry.getValue())
+                                        .put("type", "text")
+                                        .put("public", false);
+                                Unirest.post(entryPointSb.toString())
+                                        .basicAuth(null, apiKey)
+                                        .header("Content-Type", "application/json")
+                                        .routeParam("listId", list.getString("id"))
+                                        .body(reqBody.toString())
+                                        .asJson();
+                            }
+                        }
                     }
                 }
                 jsonAnswer.put("lists", lists);

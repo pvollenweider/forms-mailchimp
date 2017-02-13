@@ -36,6 +36,13 @@
                 if (data != null) {
                     msc.apiKey = data.properties.apiKey.value;
                     msc.mailchimpEnabled = msc.apiKey != null;
+                    msc.onSubmissionMappings = {
+                        server: data.properties.server != null ? data.properties.server.value : false,
+                        referrer: data.properties.referrer != null ? data.properties.referrer.value : false,
+                        formId: data.properties.formId != null ? data.properties.formId.value : false
+                    };
+                    //Used to disable update mappings button
+                    msc.originalOnSubmissionMappings = angular.copy(msc.onSubmissionMappings);
                     if (data.properties.listId != null) {
                         msc.listId = data.properties.listId.value;
                     }
@@ -64,41 +71,63 @@
 
         msc.onSubmit = function(key) {
             var data = {};
-            data[key] = msc[key];
+            switch (key) {
+                case 'apiKey':
+                case 'listId':
+                    data[key] = msc[key];
+                    break;
+                case 'onSubmissionMappings' :
+                    for (var i in msc.onSubmissionMappings) {
+                        data[i] = msc.onSubmissionMappings[i];
+                    }
+                    break;
+            }
             performRequest('saveConfiguration', data).then(function(){
-                if (key == 'apiKey') {
-                    retrieveLists().then(function(response){
-                        if (response.data.status == 'success') {
-                            toaster.pop({
-                                type   : 'success',
-                                title  : i18n.message('ff.mailchimp.message.apiKeySaved'),
-                                toastId: 'mscApiKeySaved',
-                                timeout: 3000
-                            });
-                            msc.apiKeyValid = true;
-                            msc.lists = response.data.lists;
-                            if (!(msc.listId in msc.lists)) {
-                                msc.listId = null;
+                switch (key) {
+                    case 'apiKey' :
+                        retrieveLists().then(function (response) {
+                            if (response.data.status == 'success') {
+                                toaster.pop({
+                                    type: 'success',
+                                    title: i18n.message('ff.mailchimp.message.apiKeySaved'),
+                                    toastId: 'mscApiKeySaved',
+                                    timeout: 3000
+                                });
+                                msc.apiKeyValid = true;
+                                msc.lists = response.data.lists;
+                                if (!(msc.listId in msc.lists)) {
+                                    msc.listId = null;
+                                }
+                            } else {
+                                toaster.pop({
+                                    type: 'error',
+                                    title: i18n.message('ff.mailchimp.message.incorrectApiKey'),
+                                    toastId: 'mscInvalidApiKey',
+                                    timeout: 3000
+                                });
+                                msc.apiKeyValid = false;
+                                msc.listId = '';
+                                msc.lists = null;
                             }
-                        } else {
-                            toaster.pop({
-                                type   : 'error',
-                                title  : i18n.message('ff.mailchimp.message.incorrectApiKey'),
-                                toastId: 'mscInvalidApiKey',
-                                timeout: 3000
-                            });
-                            msc.apiKeyValid = false;
-                            msc.listId = '';
-                            msc.lists = null;
-                        }
-                    });
-                } else if (key == 'listId') {
-                    toaster.pop({
-                        type   : 'success',
-                        title  : i18n.format('ff.mailchimp.message.listSaved', msc.lists[msc.listId]),
-                        toastId: 'mscListSaved',
-                        timeout: 3000
-                    });
+                        });
+                    break;
+                    case 'listId' :
+                        toaster.pop({
+                            type: 'success',
+                            title: i18n.format('ff.mailchimp.message.listSaved', msc.lists[msc.listId]),
+                            toastId: 'mscListSaved',
+                            timeout: 3000
+                        });
+                    break;
+                    case 'onSubmissionMappings' :
+                        msc.originalOnSubmissionMappings = angular.copy(msc.onSubmissionMappings);
+                        toaster.pop({
+                            type: 'success',
+                            title: i18n.message('ff.mailchimp.message.onSubmissionMappingsSaved'),
+                            toastId: 'mscOnSubmissionMappingsSaved',
+                            timeout: 3000
+                        });
+                    break;
                 }
             });
         };
@@ -141,6 +170,17 @@
                     msc.lists = response.data.lists;
                 }
             })
+        };
+
+        msc.onSubmissionMappingsChangeDetected = function() {
+            var changeDetected = false;
+            for (var i in msc.originalOnSubmissionMappings) {
+                if (msc.originalOnSubmissionMappings[i] != msc.onSubmissionMappings[i]) {
+                    changeDetected = true;
+                    break;
+                }
+            }
+            return changeDetected;
         };
 
         function retrieveLists () {
