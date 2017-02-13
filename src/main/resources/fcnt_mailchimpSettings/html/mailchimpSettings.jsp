@@ -4,6 +4,11 @@
         color: white;
         border-color:white;
     }
+    .onSubmissionMapping:hover:not(.hightlightSelectedItem) {
+        background: #f5f5f5;
+        color: #333;
+        border-color:#ddd;
+    }
 </style>
 <div class="row">
     <div class="col-lg-offset-6 col-md-6 text-right">
@@ -92,7 +97,7 @@
                         </label></div>
                     <div class="panel-body">
                         <ul class="list-group">
-                            <li class="list-group-item"
+                            <li class="list-group-item cursorPointer onSubmissionMapping"
                                 ng-class="{'hightlightSelectedItem' : value}"
                                 ng-click="msc.onSubmissionMappings[mapping]=!value;"
                                 ng-repeat="(mapping, value) in msc.onSubmissionMappings">

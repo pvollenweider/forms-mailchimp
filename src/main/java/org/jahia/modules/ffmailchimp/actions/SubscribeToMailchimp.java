@@ -7,6 +7,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.commons.lang.StringUtils;
 import org.jahia.bin.Action;
 import org.jahia.bin.ActionResult;
+import org.jahia.modules.ffmailchimp.SubmissionMetaData;
 import org.jahia.services.content.JCRContentUtils;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
@@ -44,7 +45,8 @@ public class SubscribeToMailchimp extends Action {
             mailchimpConfiguration = formFactoryNode.getNode("mailchimpConfiguration");
             String apiKey = mailchimpConfiguration.getPropertyAsString("apiKey");
             String listId = mailchimpConfiguration.getPropertyAsString("listId");
-            JCRNodeWrapper formNode = session.getNodeByIdentifier(parameters.get("formId").get(0));
+            String formId = parameters.get("formId").get(0);
+            JCRNodeWrapper formNode = session.getNodeByIdentifier(formId);
             List<JCRNodeWrapper> stepNodes = JCRContentUtils.getChildrenOfType(formNode, "fcnt:step");
             JCRNodeWrapper actionNode = resource.getNode();
             String emailInput = actionNode.getNode("mappedEmailInput").getPropertyAsString("jsonValue");
@@ -75,6 +77,26 @@ public class SubscribeToMailchimp extends Action {
                                 email = value;
                             }
                         }
+                    }
+                }
+            }
+            //Add enabled Meta data merge fields
+            Map<SubmissionMetaData, String> mergeFieldExistsMap = SubmissionMetaData.getSubmissionMetaDataTypesAsMap();
+            for (Map.Entry<SubmissionMetaData, String> entry : mergeFieldExistsMap.entrySet()) {
+                SubmissionMetaData submissionMetaData = entry.getKey();
+                String mergeTag = submissionMetaData.toString();
+                if (mailchimpConfiguration.getProperty(submissionMetaData.getJcrPropertyName()).getBoolean()) {
+                    switch(submissionMetaData) {
+                        case FFSERVER:
+                            mailchimpMergeFields.put(mergeTag, req.getRemoteAddr());
+                            break;
+                        case FFREFERRER:
+                            String origin = req.getHeader("referer");
+                            mailchimpMergeFields.put(mergeTag, StringUtils.isNotEmpty(origin) ? origin : req.getRequestURI());
+                            break;
+                        case FFFORMID:
+                            mailchimpMergeFields.put(mergeTag, formId);
+                            break;
                     }
                 }
             }

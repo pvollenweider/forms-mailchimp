@@ -8,7 +8,9 @@
     <bean class="org.jahia.modules.ffmailchimp.actions.RemoveConfiguration">
         <property name="publicationService" ref="jcrPublicationService" />
     </bean>
-    <bean class="org.jahia.modules.ffmailchimp.actions.RetrieveLists"/>
+    <bean class="org.jahia.modules.ffmailchimp.actions.RetrieveLists">
+        <property name="schedulerService" ref="SchedulerService" />
+    </bean>
     <bean class="org.jahia.modules.ffmailchimp.actions.RetrieveListMergeFields"/>
     <bean class="org.jahia.modules.ffmailchimp.actions.SubscribeToMailchimp"/>
 </beans>
