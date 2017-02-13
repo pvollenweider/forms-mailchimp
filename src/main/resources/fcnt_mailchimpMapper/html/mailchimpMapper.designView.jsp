@@ -20,7 +20,7 @@
 </div>
 <div class="row">
     <div class="col-sm-2 col-sm-offset-10">
-        <button class="btn btn-link" ng-click="mcc.reset()">
+        <button class="btn btn-link pull-right" ng-click="mcc.reset()">
             <span message-key="ff.label.mailChimp.message.label.reset"/>
         </button>
     </div>
