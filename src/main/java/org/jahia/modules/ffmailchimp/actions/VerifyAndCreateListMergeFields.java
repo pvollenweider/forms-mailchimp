@@ -6,9 +6,8 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.jahia.modules.ffmailchimp.SubmissionMetaData;
 import org.jahia.services.scheduler.BackgroundJob;
-import org.jahia.services.usermanager.JahiaUser;
-import org.jahia.services.usermanager.JahiaUserManagerService;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -26,9 +25,8 @@ import java.util.Map;
 public class VerifyAndCreateListMergeFields extends BackgroundJob{
     private static final Logger logger = LoggerFactory.getLogger(VerifyAndCreateListMergeFields.class);
     @Override
-    public void executeJahiaJob(JobExecutionContext jobExecutionContext) throws Exception {
+    public void executeJahiaJob(JobExecutionContext jobExecutionContext) throws JSONException {
         final JobDataMap jobDataMap = jobExecutionContext.getJobDetail().getJobDataMap();
-        JahiaUser jahiaUser = JahiaUserManagerService.getInstance().lookup(jobDataMap.getString("username")).getJahiaUser();
         String apiKey = jobDataMap.getString("apiKey");
         String apiEntryPoint = jobDataMap.getString("apiEntryPoint");
         List<String> listIds = (LinkedList)jobDataMap.get("listIds");
