@@ -5,6 +5,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.commons.lang.StringUtils;
+import org.jahia.api.Constants;
 import org.jahia.bin.Action;
 import org.jahia.bin.ActionResult;
 import org.jahia.modules.ffmailchimp.SubmissionMetaData;
@@ -88,14 +89,14 @@ public class SubscribeToMailchimp extends Action {
                 if (mailchimpConfiguration.getProperty(submissionMetaData.getJcrPropertyName()).getBoolean()) {
                     switch(submissionMetaData) {
                         case FFSERVER:
-                            mailchimpMergeFields.put(mergeTag, req.getRemoteAddr());
+                            mailchimpMergeFields.put(mergeTag, formNode.getResolveSite().getServerName());
                             break;
                         case FFREFERRER:
                             String origin = req.getHeader("referer");
                             mailchimpMergeFields.put(mergeTag, StringUtils.isNotEmpty(origin) ? origin : req.getRequestURI());
                             break;
                         case FFFORMID:
-                            mailchimpMergeFields.put(mergeTag, formId);
+                            mailchimpMergeFields.put(mergeTag, formNode.getPropertyAsString(Constants.JCR_TITLE));
                             break;
                     }
                 }

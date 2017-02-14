@@ -43,7 +43,10 @@ public class RetrieveLists extends Action{
             StringBuilder entryPointSb = new StringBuilder("https://");
             entryPointSb.append(server).append(".api.mailchimp.com/3.0/lists");
             try {
-                HttpResponse<JsonNode> response = Unirest.get(entryPointSb.toString()).basicAuth(null, apiKey).asJson();
+                HttpResponse<JsonNode> response = Unirest.get(entryPointSb.toString())
+                        .basicAuth(null, apiKey)
+                        .queryString("fields", "lists")
+                        .asJson();
                 //Prepare object for easy use.
                 JSONObject results = response.getBody().getObject();
                 JSONObject lists = new JSONObject();

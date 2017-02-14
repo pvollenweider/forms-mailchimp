@@ -7,6 +7,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.commons.lang.StringUtils;
 import org.jahia.bin.Action;
 import org.jahia.bin.ActionResult;
+import org.jahia.modules.ffmailchimp.SubmissionMetaData;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.render.RenderContext;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import javax.jcr.RepositoryException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -58,10 +60,20 @@ public class RetrieveListMergeFields extends Action {
             entryPointSb.append(server).append(".api.mailchimp.com/3.0/lists/{listId}/merge-fields");
             HttpResponse<JsonNode> response = Unirest.get(entryPointSb.toString())
                     .basicAuth(null, apiKey)
+                    .queryString("fields", "merge_fields")
                     .routeParam("listId", listId)
                     .asJson();
             JSONArray mergeFields = response.getBody().getObject().getJSONArray("merge_fields");
-            jsonAnswer.put("results", mergeFields);
+            HashSet<String> submissionMetaDataValues = SubmissionMetaData.getEnums();
+            JSONArray filteredMergeFields = new JSONArray();
+            for (int i = mergeFields.length() - 1 ; i > 0 ; i--) {
+                String mergeTag =((JSONObject)mergeFields.get(i)).getString("tag");
+                if (!submissionMetaDataValues.contains(mergeTag)) {
+                    filteredMergeFields.put(mergeFields.get(i));
+
+                }
+            }
+            jsonAnswer.put("results", filteredMergeFields);
             jsonAnswer.put("status", "success");
             jsonAnswer.put("message", "Successfully retrieved available mailchimp merge fields");
             actionResult.setJson(jsonAnswer);
