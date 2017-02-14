@@ -46,18 +46,18 @@
 
                 if (!_.isEmpty(tag))
                     var currentValue = ffBucketService.takenValue(BUCKET_NAME, tag);
-                    if (currentValue === undefined) {
-                        for (var i in mcc.mergeFields) {
-                            if (mcc.mergeFields[i].tag == tag) {
-                                mcc.selectedMergeField = ffBucketService.take(BUCKET_NAME, mcc.mergeFields[i].tag);
-                                break;
-                            }
+                if (currentValue === undefined) {
+                    for (var i in mcc.mergeFields) {
+                        if (mcc.mergeFields[i].tag == tag) {
+                            mcc.selectedMergeField = ffBucketService.take(BUCKET_NAME, mcc.mergeFields[i].tag);
+                            break;
                         }
                     }
-                    else {
-                        mcc.mergeFields.push(currentValue);
-                        mcc.selectedMergeField = currentValue;
-                    }
+                }
+                else {
+                    mcc.mergeFields.push(currentValue);
+                    mcc.selectedMergeField = currentValue;
+                }
                 mcc.invalidConfiguration = false;
             }, function (error) {
                 var message = 'ff.mailchimp.message.toast.' + error.data.errorType;
