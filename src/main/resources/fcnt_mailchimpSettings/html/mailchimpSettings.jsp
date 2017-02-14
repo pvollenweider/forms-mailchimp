@@ -88,32 +88,32 @@
                 </div>
             </div>
         </form>
-        <div class="form-group col-sm-offset-3 col-sm-6">
-            <form name="mailchimpOnSubmissionMappingsForm" ng-submit="msc.onSubmit('onSubmissionMappings')">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <label class="control-label">
-                            <span message-key="ff.label.mailchimp.onSubmissionMappings.title"></span>
-                        </label></div>
-                    <div class="panel-body">
-                        <ul class="list-group">
-                            <li class="list-group-item cursorPointer onSubmissionMapping"
-                                ng-class="{'hightlightSelectedItem' : value}"
-                                ng-click="msc.onSubmissionMappings[mapping]=!value;"
-                                ng-repeat="(mapping, value) in msc.onSubmissionMappings">
-                                <span message-key="ff.label.mailchimp.onSubmissionMappings.{{mapping}}"></span>
-                            </li>
-                        </ul>
-                        <button type="submit"
-                                style="float:right;"
-                                ng-disabled="!msc.onSubmissionMappingsChangeDetected()"
-                                class="btn btn-primary">
-                            <span message-key="ff.label.mailchimp.update"></span>
-                        </button>
-                    </div>
+    </div>
+    <div class="form-group col-sm-offset-3 col-sm-6" ng-if="msc.mailchimpEnabled && msc.apiKeyValid">
+        <form name="mailchimpOnSubmissionMappingsForm" ng-submit="msc.onSubmit('onSubmissionMappings')">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="control-label">
+                        <span message-key="ff.label.mailchimp.onSubmissionMappings.title"></span>
+                    </label></div>
+                <div class="panel-body">
+                    <ul class="list-group">
+                        <li class="list-group-item cursorPointer onSubmissionMapping"
+                            ng-class="{'hightlightSelectedItem' : value}"
+                            ng-click="msc.onSubmissionMappings[mapping]=!value;"
+                            ng-repeat="(mapping, value) in msc.onSubmissionMappings">
+                            <span message-key="ff.label.mailchimp.onSubmissionMappings.{{mapping}}"></span>
+                        </li>
+                    </ul>
+                    <button type="submit"
+                            style="float:right;"
+                            ng-disabled="!msc.onSubmissionMappingsChangeDetected()"
+                            class="btn btn-primary">
+                        <span message-key="ff.label.mailchimp.update"></span>
+                    </button>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 </div>
 <hr/>
