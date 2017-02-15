@@ -1,9 +1,3 @@
-<style>
-    .mappedInput {
-        border: 2px solid #3E73A9;
-        border-radius:2px;
-    }
-</style>
 <input type="hidden"
        class="form-control"
        ng-model="action.mappedEmailInput"
