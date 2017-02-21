@@ -36,7 +36,7 @@
                 }
             };
 
-            $http(req).then(function(response){
+            $http(req).then(function(response){console.log(response.data.results);
                 if (ffBucketService.bucket(BUCKET_NAME) === null) {
                     ffBucketService.createBucket(BUCKET_NAME, response.data.results, TRACK_BY);
                     initBucket();

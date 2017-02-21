@@ -11,11 +11,11 @@
     }
 </style>
 <div class="row">
-    <div class="col-lg-offset-6 col-md-6 text-right">
+    <div class="col-sm-offset-6 col-sm-6 text-right">
         <switch ng-change=msc.updateMailchimpConfiguration() ng-model="msc.mailchimpEnabled"></switch>
     </div>
 
-    <div class="col-md-12 form-group" ng-if="msc.mailchimpEnabled"
+    <div class="col-sm-12 form-group" ng-if="msc.mailchimpEnabled"
          ng-class="{'has-error': mailchimpApiKeyForm['apiKey'].$invalid}">
         <form name="mailchimpApiKeyForm" ng-submit="msc.onSubmit('apiKey')">
             <div class="panel panel-default">
@@ -46,7 +46,7 @@
             </div>
         </form>
     </div>
-    <div class="col-md-12 form-group" ng-if="msc.lists">
+    <div class="col-sm-12 form-group" ng-if="msc.lists">
         <form name="mailchimpListForm" ng-submit="msc.onSubmit('listId')">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -82,7 +82,7 @@
                             </span>
                         </span>
                     </div>
-                    <div class="col-md-12" ng-if="msc.apiKeyValid && !msc.hasLists()">
+                    <div class="col-sm-12" ng-if="msc.apiKeyValid && !msc.hasLists()">
                         <span ng-bind-html="msc.getEmptyListMessage()"></span>
                     </div>
                 </div>

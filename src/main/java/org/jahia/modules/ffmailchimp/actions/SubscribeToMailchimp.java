@@ -124,19 +124,24 @@ public class SubscribeToMailchimp extends Action {
                 jsonAnswer.put("status", "success");
                 jsonAnswer.put("actionName", "subscribeToMailchimp");
                 JSONObject results = new JSONObject();
-                results.put("request", response.getBody().getObject());
+                results.put("response", response.getBody().getObject());
                 results.put("submission", inputResults);
                 jsonAnswer.put("results", results);
+                jsonAnswer.put("message", "Subscribed/Updated user to Mailchimp successfully!");
+                jsonAnswer.put("code", HttpServletResponse.SC_OK);
                 actionResult.setJson(results);
             } catch (UnirestException e) {
                 jsonAnswer.put("status", "error");
                 jsonAnswer.put("message", e.getMessage());
-                return new ActionResult(HttpServletResponse.SC_OK, null, jsonAnswer);
+                jsonAnswer.put("code", HttpServletResponse.SC_BAD_REQUEST);
+                actionResult.setResultCode(HttpServletResponse.SC_BAD_REQUEST);
             }
         } else {
             jsonAnswer.put("status", "error");
             jsonAnswer.put("message", "Mailchimp configuration does not exist on this site");
+            jsonAnswer.put("code", HttpServletResponse.SC_BAD_REQUEST);
             logger.error("Failed to execute Subscribe to Mailchimp due to missing mailchimp configuration");
+            actionResult.setResultCode(HttpServletResponse.SC_BAD_REQUEST);
         }
         actionResult.setJson(jsonAnswer);
         return actionResult;

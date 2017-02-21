@@ -66,7 +66,7 @@ public class RetrieveListMergeFields extends Action {
             JSONArray mergeFields = response.getBody().getObject().getJSONArray("merge_fields");
             HashSet<String> submissionMetaDataValues = SubmissionMetaData.getEnums();
             JSONArray filteredMergeFields = new JSONArray();
-            for (int i = mergeFields.length() - 1 ; i > 0 ; i--) {
+            for (int i = 0; i < mergeFields.length() ; i++) {
                 String mergeTag =((JSONObject)mergeFields.get(i)).getString("tag");
                 if (!submissionMetaDataValues.contains(mergeTag)) {
                     filteredMergeFields.put(mergeFields.get(i));
