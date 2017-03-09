@@ -4,6 +4,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.jahia.api.Constants;
 import org.jahia.bin.Action;
@@ -21,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.codec.binary.Hex;
 import java.security.MessageDigest;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -87,7 +87,7 @@ public class SubscribeToMailchimp extends Action {
                 SubmissionMetaData submissionMetaData = entry.getKey();
                 String mergeTag = submissionMetaData.toString();
                 if (mailchimpConfiguration.getProperty(submissionMetaData.getJcrPropertyName()).getBoolean()) {
-                    switch(submissionMetaData) {
+                    switch (submissionMetaData) {
                         case FFSERVER:
                             mailchimpMergeFields.put(mergeTag, formNode.getResolveSite().getServerName());
                             break;
@@ -101,6 +101,8 @@ public class SubscribeToMailchimp extends Action {
                     }
                 }
             }
+            String formDisplayId = parameters.get("formDisplayId").get(0);
+
             //Update subscribe/update member in mailchimp
             byte[] emailAsBytes = email.getBytes("UTF-8");
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -113,6 +115,11 @@ public class SubscribeToMailchimp extends Action {
                     .put("status_if_new", "subscribed")
                     .put("merge_fields", mailchimpMergeFields)
                     .put("ip_signup", req.getRemoteAddr());
+            if (session.getNodeByIdentifier(formDisplayId).isNodeType("fcmix:mailchimpGroup")) {
+                JSONObject interests = new JSONObject();
+                interests.put(session.getNodeByIdentifier(formDisplayId).getPropertyAsString("group"), Boolean.TRUE);
+                reqBody.put("interests", interests);
+            }
             try {
                 HttpResponse<JsonNode> response = Unirest.put(entryPointSb.toString())
                         .basicAuth(null, apiKey)

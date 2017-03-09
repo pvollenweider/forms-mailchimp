@@ -13,4 +13,5 @@
     </bean>
     <bean class="org.jahia.modules.ffmailchimp.actions.RetrieveListMergeFields"/>
     <bean class="org.jahia.modules.ffmailchimp.actions.SubscribeToMailchimp"/>
+    <bean class="org.jahia.modules.ffmailchimp.initializer.MailChimpInterestsInitializer"/>
 </beans>

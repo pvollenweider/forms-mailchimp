@@ -16,3 +16,8 @@
 
  [fcnt:mailchimpMapper] > jnt:content, fcmix:miscDirective, mix:title, jmix:droppableContent, jmix:hiddenType
  [fcnt:subscribeToMailchimpAction]> jnt:content, fcmix:action, mix:title, jmix:droppableContent, jmix:hiddenType
+
+[fcmix:mailchimpGroup] mixin
+ extends = fcnt:formDisplay
+ itemtype = content
+ - group (string,choicelist[mailchimp,sort]) i18n indexed=no
