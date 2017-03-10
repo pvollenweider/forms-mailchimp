@@ -10,9 +10,7 @@ import org.jahia.api.Constants;
 import org.jahia.bin.Action;
 import org.jahia.bin.ActionResult;
 import org.jahia.modules.ffmailchimp.SubmissionMetaData;
-import org.jahia.services.content.JCRContentUtils;
-import org.jahia.services.content.JCRNodeWrapper;
-import org.jahia.services.content.JCRSessionWrapper;
+import org.jahia.services.content.*;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.render.Resource;
 import org.jahia.services.render.URLResolver;
@@ -86,7 +84,7 @@ public class SubscribeToMailchimp extends Action {
             for (Map.Entry<SubmissionMetaData, String> entry : mergeFieldExistsMap.entrySet()) {
                 SubmissionMetaData submissionMetaData = entry.getKey();
                 String mergeTag = submissionMetaData.toString();
-                if (mailchimpConfiguration.getProperty(submissionMetaData.getJcrPropertyName()).getBoolean()) {
+                if (mailchimpConfiguration.hasProperty(submissionMetaData.getJcrPropertyName()) && mailchimpConfiguration.getProperty(submissionMetaData.getJcrPropertyName()).getBoolean()) {
                     switch (submissionMetaData) {
                         case FFSERVER:
                             mailchimpMergeFields.put(mergeTag, formNode.getResolveSite().getServerName());
@@ -117,7 +115,10 @@ public class SubscribeToMailchimp extends Action {
                     .put("ip_signup", req.getRemoteAddr());
             if (session.getNodeByIdentifier(formDisplayId).isNodeType("fcmix:mailchimpGroup")) {
                 JSONObject interests = new JSONObject();
-                interests.put(session.getNodeByIdentifier(formDisplayId).getPropertyAsString("group"), Boolean.TRUE);
+                JCRValueWrapper[] group = session.getNodeByIdentifier(formDisplayId).getProperty("group").getValues();
+                for (JCRValueWrapper valueWrapper : group) {
+                    interests.put(valueWrapper.getString(), Boolean.TRUE);
+                }
                 reqBody.put("interests", interests);
             }
             try {

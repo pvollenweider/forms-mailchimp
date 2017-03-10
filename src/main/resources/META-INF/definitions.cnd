@@ -20,4 +20,5 @@
 [fcmix:mailchimpGroup] mixin
  extends = fcnt:formDisplay
  itemtype = content
- - group (string,choicelist[mailchimp,sort]) i18n indexed=no
+ - category (string, choicelist[mailchimp,sort]) mandatory i18n indexed=no
+ - group (string,choicelist[mailchimp,sort,dependentProperties='category']) multiple mandatory i18n indexed=no
