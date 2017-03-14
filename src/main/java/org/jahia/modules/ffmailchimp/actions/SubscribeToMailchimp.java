@@ -112,7 +112,8 @@ public class SubscribeToMailchimp extends Action {
             reqBody.put("email_address", email)
                     .put("status_if_new", "subscribed")
                     .put("merge_fields", mailchimpMergeFields)
-                    .put("ip_signup", req.getRemoteAddr());
+                    .put("ip_signup", req.getRemoteAddr())
+                    .put("language", session.getLocale());
             if (session.getNodeByIdentifier(formDisplayId).isNodeType("fcmix:mailchimpGroup")) {
                 JSONObject interests = new JSONObject();
                 JCRValueWrapper[] group = session.getNodeByIdentifier(formDisplayId).getProperty("group").getValues();
