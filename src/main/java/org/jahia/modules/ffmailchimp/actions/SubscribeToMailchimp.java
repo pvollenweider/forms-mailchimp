@@ -14,6 +14,7 @@ import org.jahia.services.content.*;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.render.Resource;
 import org.jahia.services.render.URLResolver;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,23 @@ public class SubscribeToMailchimp extends Action {
                         List values = entry.getValue();
                         String value = values.get(0).toString();
                         if (values.size() == 1) {
+                            //Check if this is a json string
+                            try {
+                                JSONObject jsonObject = new JSONObject(value);
+                                //Since there are few inputs that store complex data we will try to figure out
+                                //which this is
+
+                                //Check if this is a country input
+                                if (jsonObject.has("country")) {
+                                    //Country input
+                                   value = jsonObject.getJSONObject("country").getString("name");
+                                } else if (jsonObject.has("css") && jsonObject.getString("css").equals("fa-star rated")) {
+                                    //Rating input
+                                    value = jsonObject.getString("value");
+                                }
+                            } catch(JSONException ex) {
+                                //no need to do anything here.
+                            }
                             if (input.hasNode("miscDirectives")) {
                                 JCRNodeWrapper miscDirectives = input.getNode("miscDirectives");
                                 if (miscDirectives.hasNode("mailchimp-mapper")) {
