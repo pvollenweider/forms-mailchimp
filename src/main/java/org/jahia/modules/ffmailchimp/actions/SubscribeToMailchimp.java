@@ -70,12 +70,12 @@ public class SubscribeToMailchimp extends Action {
                                 if (jsonObject.has("country")) {
                                     //Country input
                                    value = jsonObject.getJSONObject("country").getString("name");
-                                } else if (jsonObject.has("css") && jsonObject.getString("css").equals("fa-star rated")) {
-                                    //Rating input
+                                } else if (jsonObject.has("value")) {
+                                    //Input with value
                                     value = jsonObject.getString("value");
                                 }
                             } catch(JSONException ex) {
-                                //no need to do anything here.
+                                logger.warn("Failed to read value from json object. Entire object will be sent. Ignore if value is not of \"{ ... }\" type: " + value);
                             }
                             if (input.hasNode("miscDirectives")) {
                                 JCRNodeWrapper miscDirectives = input.getNode("miscDirectives");
