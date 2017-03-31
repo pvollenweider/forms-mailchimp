@@ -60,13 +60,6 @@
                 }
                 mcc.invalidConfiguration = false;
             }, function (error) {
-                var message = 'ff.mailchimp.message.toast.' + error.data.errorType;
-                toaster.pop({
-                    type   : 'error',
-                    title  : i18n.message(message),
-                    toastId: 'mccError' + error.data.errorType,
-                    timeout: 3000
-                });
                 mcc.invalidConfiguration = true;
             });
         };
