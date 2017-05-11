@@ -58,8 +58,8 @@ public class SubscribeToMailchimp extends Action {
                         JCRNodeWrapper input = step.getNode(inputName);
                         boolean isMergeField = false;
                         List values = entry.getValue();
-                        String value = values.get(0).toString();
                         if (values.size() == 1) {
+                            String value = values.get(0).toString();
                             //Check if this is a json string
                             try {
                                 JSONObject jsonObject = new JSONObject(value);
