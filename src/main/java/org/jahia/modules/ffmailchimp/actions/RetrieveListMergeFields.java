@@ -61,6 +61,7 @@ public class RetrieveListMergeFields extends Action {
             HttpResponse<JsonNode> response = Unirest.get(entryPointSb.toString())
                     .basicAuth(null, apiKey)
                     .queryString("fields", "merge_fields")
+                    .queryString("count", 30)
                     .routeParam("listId", listId)
                     .asJson();
             JSONArray mergeFields = response.getBody().getObject().getJSONArray("merge_fields");
