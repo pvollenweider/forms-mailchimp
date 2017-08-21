@@ -1,6 +1,5 @@
 package org.jahia.modules.ffmailchimp.actions;
 
-import com.drew.lang.StringUtil;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -158,6 +157,8 @@ public class SubscribeToMailchimp extends Action {
                     jsonAnswer.put("results", results);
                     jsonAnswer.put("message", "Subscribed/Updated user to Mailchimp successfully!");
                     jsonAnswer.put("code", HttpServletResponse.SC_OK);
+                    logger.info("Subscribe to mailchimp responded with code (" + response.getStatus() + "): " +  response.getStatusText());
+                    logger.info("response body: " + response.getBody());
                     actionResult.setJson(results);
                 } catch (UnirestException e) {
                     jsonAnswer.put("status", "error");
