@@ -75,7 +75,8 @@ public class SubscribeToMailchimp extends Action {
                                     value = jsonObject.getString("value");
                                 }
                             } catch(JSONException ex) {
-                                logger.warn("Failed to read value from json object. Entire object will be sent. Ignore if value is not of \"{ ... }\" type: " + value);
+                                final String errMsg = "Failed to read value from json object for field %s. Entire object will be sent.";
+                                logger.warn(String.format(errMsg, inputName));
                             }
                             if (input.hasNode("miscDirectives")) {
                                 JCRNodeWrapper miscDirectives = input.getNode("miscDirectives");
