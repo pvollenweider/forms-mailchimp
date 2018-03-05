@@ -22,9 +22,11 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.jcr.NodeIterator;
 
 /**
  * Created by stefan on 2017-02-08.
@@ -48,13 +50,19 @@ public class SubscribeToMailchimp extends Action {
             String formId = parameters.get("formId").get(0);
             JCRNodeWrapper formNode = session.getNodeByIdentifier(formId);
             List<JCRNodeWrapper> stepNodes = JCRContentUtils.getChildrenOfType(formNode, "fcnt:step");
+            final NodeIterator childrenOfType = JCRContentUtils.getDescendantNodes(formNode, "fcnt:passwordDefinition");
+            final List<String> passordInputName = new ArrayList<>();
+            while (childrenOfType.hasNext()) {
+                final JCRNodeWrapper next = (JCRNodeWrapper) childrenOfType.next();
+                passordInputName.add(next.getName());
+            }
             JCRNodeWrapper actionNode = resource.getNode();
             String emailInput = actionNode.getNode("mappedEmailInput").getPropertyAsString("jsonValue");
             String email = null;
             for (JCRNodeWrapper step : stepNodes) {
                 for (Map.Entry<String, List<String>> entry : parameters.entrySet()) {
                     String inputName = entry.getKey();
-                    if (step.hasNode(inputName)) {
+                    if (step.hasNode(inputName) && !passordInputName.contains(inputName)) {
                         JCRNodeWrapper input = step.getNode(inputName);
                         boolean isMergeField = false;
                         List values = entry.getValue();
@@ -75,7 +83,8 @@ public class SubscribeToMailchimp extends Action {
                                     value = jsonObject.getString("value");
                                 }
                             } catch(JSONException ex) {
-                                logger.warn("Failed to read value from json object. Entire object will be sent. Ignore if value is not of \"{ ... }\" type: " + value);
+                                final String errMsg = "Failed to read value from json object for field %s. Entire object will be sent.";
+                                logger.warn(String.format(errMsg, inputName));
                             }
                             if (input.hasNode("miscDirectives")) {
                                 JCRNodeWrapper miscDirectives = input.getNode("miscDirectives");
