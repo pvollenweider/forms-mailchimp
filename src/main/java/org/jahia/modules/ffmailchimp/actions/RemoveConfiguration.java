@@ -16,25 +16,21 @@ import org.jahia.services.render.Resource;
 import org.jahia.services.render.URLResolver;
 import org.jahia.utils.LanguageCodeConverters;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created by stefan on 2017-02-06.
  */
 public class RemoveConfiguration extends Action {
 
-    private final static Logger logger = LoggerFactory.getLogger(RemoveConfiguration.class);
-
     private JCRPublicationService publicationService;
 
     @Override
     public ActionResult doExecute(HttpServletRequest httpServletRequest, RenderContext renderContext, Resource resource, JCRSessionWrapper session, Map<String, List<String>> map, URLResolver urlResolver) throws Exception {
-        ActionResult actionResult = new ActionResult(HttpServletResponse.SC_OK);
-        JSONObject jsonAnswer = new JSONObject();
+        final ActionResult actionResult = new ActionResult(HttpServletResponse.SC_OK);
+        final JSONObject jsonAnswer = new JSONObject();
 
-        JCRNodeWrapper siteNode = resource.getNode();
-        JCRNodeWrapper formFactoryFolder;
+        final JCRNodeWrapper siteNode = resource.getNode();
+        final JCRNodeWrapper formFactoryFolder;
         if (!siteNode.hasNode("formFactory")) {
             return actionResult;
         } else {
@@ -46,7 +42,7 @@ public class RemoveConfiguration extends Action {
             formFactoryFolder.removeMixin("fcmix:mailchimpConfiguration");
         }
         session.save();
-        HashSet<String> languages = new HashSet<>();
+        final HashSet<String> languages = new HashSet<>();
         languages.add(LanguageCodeConverters.localeToLanguageTag(session.getLocale()));
         publicationService.publishByMainId(formFactoryFolder.getIdentifier(), Constants.EDIT_WORKSPACE, Constants.LIVE_WORKSPACE, languages, false, null);
         jsonAnswer.put("status", "success");

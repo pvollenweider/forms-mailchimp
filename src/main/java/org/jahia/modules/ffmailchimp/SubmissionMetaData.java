@@ -1,8 +1,5 @@
 package org.jahia.modules.ffmailchimp;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -15,10 +12,9 @@ public enum SubmissionMetaData {
     FFREFERRER("Referrer", "referrer"),
     FFFORMID("Form Identifier", "formId");
 
-    private static final Logger logger = LoggerFactory.getLogger(SubmissionMetaData.class);
+    private static HashSet<String> values;
     private final String displayName;
     private final String jcrPropertyName;
-    private static HashSet<String> values;
 
     SubmissionMetaData(String displayName, String jcrPropertyName) {
         this.displayName = displayName;
@@ -26,7 +22,7 @@ public enum SubmissionMetaData {
     }
 
     public static Map<SubmissionMetaData, String> getSubmissionMetaDataTypesAsMap() {
-        Map<SubmissionMetaData, String> map = new LinkedHashMap<>();
+        final Map<SubmissionMetaData, String> map = new LinkedHashMap<>();
         for (SubmissionMetaData submissionMetaData : SubmissionMetaData.values()) {
             map.put(submissionMetaData, submissionMetaData.displayName);
         }

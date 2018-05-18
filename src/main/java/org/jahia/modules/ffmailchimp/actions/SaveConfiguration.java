@@ -16,24 +16,20 @@ import org.jahia.services.render.Resource;
 import org.jahia.services.render.URLResolver;
 import org.jahia.utils.LanguageCodeConverters;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created by stefan on 2017-02-06.
  */
 public class SaveConfiguration extends Action {
 
-    private final static Logger logger = LoggerFactory.getLogger(SaveConfiguration.class);
-
     private JCRPublicationService publicationService;
 
     @Override
     public ActionResult doExecute(HttpServletRequest httpServletRequest, RenderContext renderContext, Resource resource, JCRSessionWrapper session, Map<String, List<String>> map, URLResolver urlResolver) throws Exception {
-        ActionResult actionResult = new ActionResult(HttpServletResponse.SC_OK);
+        final ActionResult actionResult = new ActionResult(HttpServletResponse.SC_OK);
 
-        JCRNodeWrapper siteNode = resource.getNode();
-        JCRNodeWrapper formFactoryFolder;
+        final JCRNodeWrapper siteNode = resource.getNode();
+        final JCRNodeWrapper formFactoryFolder;
         if (!siteNode.hasNode("formFactory")) {
             formFactoryFolder = siteNode.addNode("formFactory", "fcnt:formFactory");
             session.save();
@@ -43,7 +39,7 @@ public class SaveConfiguration extends Action {
         if (!formFactoryFolder.isNodeType("fcmix:mailchimpConfiguration")) {
             formFactoryFolder.addMixin("fcmix:mailchimpConfiguration");
         }
-        JCRNodeWrapper mailchimpConfigurationNode;
+        final JCRNodeWrapper mailchimpConfigurationNode;
         if (!formFactoryFolder.hasNode("mailchimpConfiguration")) {
             mailchimpConfigurationNode = formFactoryFolder.addNode("mailchimpConfiguration", "fcnt:mailchimpConfiguration");
         } else {
@@ -54,10 +50,10 @@ public class SaveConfiguration extends Action {
             mailchimpConfigurationNode.setProperty(key, entry.getValue().get(0));
         }
         session.save();
-        HashSet<String> languages = new HashSet<>();
+        final HashSet<String> languages = new HashSet<>();
         languages.add(LanguageCodeConverters.localeToLanguageTag(session.getLocale()));
         publicationService.publishByMainId(formFactoryFolder.getIdentifier(), Constants.EDIT_WORKSPACE, Constants.LIVE_WORKSPACE, languages, false, null);
-        JSONObject jsonAnswer = new JSONObject();
+        final JSONObject jsonAnswer = new JSONObject();
         jsonAnswer.put("status", "success");
         jsonAnswer.put("message", "Mailchimp configuration was saved successfully!");
         actionResult.setJson(jsonAnswer);

@@ -17,9 +17,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
@@ -29,41 +26,40 @@ import java.util.*;
  */
 public class RetrieveLists extends Action {
 
-    private final static Logger logger = LoggerFactory.getLogger(RetrieveLists.class);
     private SchedulerService schedulerService;
 
     @Override
     public ActionResult doExecute(HttpServletRequest httpServletRequest, RenderContext renderContext, Resource resource, JCRSessionWrapper session, Map<String, List<String>> map, URLResolver urlResolver) throws Exception {
         //Check that we have the key
-        JSONObject jsonAnswer = new JSONObject();
-        List<String> parameterList = map.get("apiKey");
+        final JSONObject jsonAnswer = new JSONObject();
+        final List<String> parameterList = map.get("apiKey");
         if (parameterList.size() > 0) {
-            String apiKey = parameterList.get(0);
-            String server = apiKey.substring(apiKey.indexOf('-') + 1, apiKey.length());
-            StringBuilder entryPointSb = new StringBuilder("https://");
+            final String apiKey = parameterList.get(0);
+            final String server = apiKey.substring(apiKey.indexOf('-') + 1, apiKey.length());
+            final StringBuilder entryPointSb = new StringBuilder("https://");
             entryPointSb.append(server).append(".api.mailchimp.com/3.0/lists");
             try {
-                HttpResponse<JsonNode> response = Unirest.get(entryPointSb.toString())
+                final HttpResponse<JsonNode> response = Unirest.get(entryPointSb.toString())
                         .basicAuth(null, apiKey)
                         .queryString("fields", "lists")
                         .asJson();
                 //Prepare object for easy use.
-                JSONObject results = response.getBody().getObject();
-                JSONObject lists = new JSONObject();
-                List<String> backgroundJobListIds = new LinkedList<>();
+                final JSONObject results = response.getBody().getObject();
+                final JSONObject lists = new JSONObject();
+                final List<String> backgroundJobListIds = new LinkedList<>();
                 if (results != null) {
-                    JSONArray rawLists = results.getJSONArray("lists");
+                    final JSONArray rawLists = results.getJSONArray("lists");
                     for (int i = 0; i < rawLists.length(); i++) {
-                        JSONObject list = (JSONObject) rawLists.get(i);
-                        String listId = list.getString("id");
+                        final JSONObject list = (JSONObject) rawLists.get(i);
+                        final String listId = list.getString("id");
                         lists.put(listId, list.getString("name"));
                         backgroundJobListIds.add(listId);
                     }
                     //Setup job to check lists for missing merge fields and to add them to the respective list.
-                    JobDetail jahiaJob = BackgroundJob.createJahiaJob("Verifying Merge fields in available lists. Any missing fields will be added.", VerifyAndCreateListMergeFields.class);
+                    final JobDetail jahiaJob = BackgroundJob.createJahiaJob("Verifying Merge fields in available lists. Any missing fields will be added.", VerifyAndCreateListMergeFields.class);
                     jahiaJob.setName("VerifyAndCreateListMergeFields" + org.apache.commons.id.uuid.UUID.randomUUID().toString());
                     jahiaJob.setGroup("FFActions");
-                    JobDataMap jobDataMap = jahiaJob.getJobDataMap();
+                    final JobDataMap jobDataMap = jahiaJob.getJobDataMap();
                     jobDataMap.put("username", session.getUser().getUserKey());
                     jobDataMap.put("apiKey", apiKey);
                     jobDataMap.put("listIds", backgroundJobListIds);
@@ -78,7 +74,7 @@ public class RetrieveLists extends Action {
                 return new ActionResult(HttpServletResponse.SC_OK, null, jsonAnswer);
             } catch (UnirestException e) {
                 //Removed a saved list from mailchimp configuration (if one is saved already);
-                JCRNodeWrapper mailchimpConfigurationNode = resource.getNode().getNode("formFactory/mailchimpConfiguration");
+                final JCRNodeWrapper mailchimpConfigurationNode = resource.getNode().getNode("formFactory/mailchimpConfiguration");
                 mailchimpConfigurationNode.setProperty("listId", "");
                 session.save();
                 jsonAnswer.put("status", "error");
