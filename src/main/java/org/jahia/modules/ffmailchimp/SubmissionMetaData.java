@@ -1,6 +1,5 @@
 package org.jahia.modules.ffmailchimp;
 
-import org.apache.pdfbox.pdmodel.graphics.predictor.Sub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

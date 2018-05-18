@@ -4,6 +4,10 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import org.jahia.modules.ffmailchimp.SubmissionMetaData;
 import org.jahia.services.scheduler.BackgroundJob;
 import org.json.JSONArray;
@@ -13,11 +17,6 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by stefan on 2017-02-13.
@@ -48,7 +47,7 @@ public class VerifyAndCreateListMergeFields extends BackgroundJob {
                     if (submissionMetaDataValues.contains(mergeTag)) {
                         mergeFieldExistsMap.remove(SubmissionMetaData.valueOf(mergeTag));
                     }
-                    if (mergeFieldExistsMap.size() == 0) {
+                    if (mergeFieldExistsMap.isEmpty()) {
                         break;
                     }
                 }
