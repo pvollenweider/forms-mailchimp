@@ -24,6 +24,7 @@ import java.util.Map;
  * Created by stefan on 2017-02-06.
  */
 public class SaveConfiguration extends Action {
+
     private final static Logger logger = LoggerFactory.getLogger(SaveConfiguration.class);
 
     private JCRPublicationService publicationService;

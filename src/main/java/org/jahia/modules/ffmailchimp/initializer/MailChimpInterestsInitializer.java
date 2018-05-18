@@ -24,6 +24,7 @@ import java.util.Map;
  * Created by rincevent on 2017-03-09.
  */
 public class MailChimpInterestsInitializer implements ModuleChoiceListInitializer {
+
     @Override
     public void setKey(String s) {
 
@@ -38,7 +39,7 @@ public class MailChimpInterestsInitializer implements ModuleChoiceListInitialize
     public List<ChoiceListValue> getChoiceListValues(ExtendedPropertyDefinition extendedPropertyDefinition, String s, List<ChoiceListValue> list, Locale locale, Map<String, Object> map) {
         List<ChoiceListValue> results = new ArrayList<>();
         JCRNodeWrapper nodeWrapper = (JCRNodeWrapper) map.get("contextNode");
-        if(nodeWrapper==null) {
+        if (nodeWrapper == null) {
             nodeWrapper = (JCRNodeWrapper) map.get("contextParent");
         }
         try {

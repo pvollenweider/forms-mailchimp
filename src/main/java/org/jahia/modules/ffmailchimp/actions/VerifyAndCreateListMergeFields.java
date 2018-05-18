@@ -22,14 +22,16 @@ import java.util.Map;
 /**
  * Created by stefan on 2017-02-13.
  */
-public class VerifyAndCreateListMergeFields extends BackgroundJob{
+public class VerifyAndCreateListMergeFields extends BackgroundJob {
+
     private static final Logger logger = LoggerFactory.getLogger(VerifyAndCreateListMergeFields.class);
+
     @Override
     public void executeJahiaJob(JobExecutionContext jobExecutionContext) throws JSONException {
         final JobDataMap jobDataMap = jobExecutionContext.getJobDetail().getJobDataMap();
         String apiKey = jobDataMap.getString("apiKey");
         String apiEntryPoint = jobDataMap.getString("apiEntryPoint");
-        List<String> listIds = (LinkedList)jobDataMap.get("listIds");
+        List<String> listIds = (LinkedList) jobDataMap.get("listIds");
         HashSet<String> submissionMetaDataValues = SubmissionMetaData.getEnums();
         try {
             for (String listId : listIds) {

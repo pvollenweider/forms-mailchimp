@@ -29,13 +29,15 @@ import java.util.Map;
  * Created by stefan on 2017-02-07.
  */
 public class RetrieveListMergeFields extends Action {
+
     private static final Logger logger = LoggerFactory.getLogger(RetrieveListMergeFields.class);
+
     @Override
     public ActionResult doExecute(HttpServletRequest req, RenderContext renderContext, Resource resource, JCRSessionWrapper session, Map<String, List<String>> parameters, URLResolver urlResolver) throws Exception {
         ActionResult actionResult;
         JSONObject jsonAnswer = new JSONObject();
         try {
-            if(resource.getNode().getNode("formFactory").hasNode("mailchimpConfiguration")) {
+            if (resource.getNode().getNode("formFactory").hasNode("mailchimpConfiguration")) {
                 actionResult = new ActionResult(HttpServletResponse.SC_OK);
                 JCRNodeWrapper mailchimpConfiguration = resource.getNode().getNode("formFactory/mailchimpConfiguration");
                 String apiKey = mailchimpConfiguration.getPropertyAsString("apiKey");

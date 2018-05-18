@@ -28,7 +28,8 @@ import java.util.*;
 /**
  * Created by stefan on 2017-02-06.
  */
-public class RetrieveLists extends Action{
+public class RetrieveLists extends Action {
+
     private final static Logger logger = LoggerFactory.getLogger(RetrieveLists.class);
     private SchedulerService schedulerService;
 
@@ -54,14 +55,14 @@ public class RetrieveLists extends Action{
                 if (results != null) {
                     JSONArray rawLists = results.getJSONArray("lists");
                     for (int i = 0; i < rawLists.length(); i++) {
-                        JSONObject list = (JSONObject)rawLists.get(i);
+                        JSONObject list = (JSONObject) rawLists.get(i);
                         String listId = list.getString("id");
                         lists.put(listId, list.getString("name"));
                         backgroundJobListIds.add(listId);
                     }
                     //Setup job to check lists for missing merge fields and to add them to the respective list.
                     JobDetail jahiaJob = BackgroundJob.createJahiaJob("Verifying Merge fields in available lists. Any missing fields will be added.", VerifyAndCreateListMergeFields.class);
-                    jahiaJob.setName("VerifyAndCreateListMergeFields"+ org.apache.commons.id.uuid.UUID.randomUUID().toString());
+                    jahiaJob.setName("VerifyAndCreateListMergeFields" + org.apache.commons.id.uuid.UUID.randomUUID().toString());
                     jahiaJob.setGroup("FFActions");
                     JobDataMap jobDataMap = jahiaJob.getJobDataMap();
                     jobDataMap.put("username", session.getUser().getUserKey());

@@ -32,6 +32,7 @@ import javax.jcr.NodeIterator;
  * Created by stefan on 2017-02-08.
  */
 public class SubscribeToMailchimp extends Action {
+
     private static final Logger logger = LoggerFactory.getLogger(SubscribeToMailchimp.class);
 
     @Override
@@ -77,12 +78,12 @@ public class SubscribeToMailchimp extends Action {
                                 //Check if this is a country input
                                 if (jsonObject.has("country")) {
                                     //Country input
-                                   value = jsonObject.getJSONObject("country").getString("name");
+                                    value = jsonObject.getJSONObject("country").getString("name");
                                 } else if (jsonObject.has("value")) {
                                     //Input with value
                                     value = jsonObject.getString("value");
                                 }
-                            } catch(JSONException ex) {
+                            } catch (JSONException ex) {
                                 final String errMsg = "Failed to read value from json object for field %s. Entire object will be sent.";
                                 logger.warn(String.format(errMsg, inputName));
                             }
@@ -166,7 +167,7 @@ public class SubscribeToMailchimp extends Action {
                     jsonAnswer.put("results", results);
                     jsonAnswer.put("message", "Subscribed/Updated user to Mailchimp successfully!");
                     jsonAnswer.put("code", HttpServletResponse.SC_OK);
-                    logger.info("Subscribe to mailchimp responded with code (" + response.getStatus() + "): " +  response.getStatusText());
+                    logger.info("Subscribe to mailchimp responded with code (" + response.getStatus() + "): " + response.getStatusText());
                     logger.info("response body: " + response.getBody());
                     actionResult.setJson(results);
                 } catch (UnirestException e) {

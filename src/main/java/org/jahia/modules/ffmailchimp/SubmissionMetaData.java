@@ -29,7 +29,7 @@ public enum SubmissionMetaData {
     public static Map<SubmissionMetaData, String> getSubmissionMetaDataTypesAsMap() {
         Map<SubmissionMetaData, String> map = new LinkedHashMap<>();
         for (SubmissionMetaData submissionMetaData : SubmissionMetaData.values()) {
-           map.put(submissionMetaData, submissionMetaData.displayName);
+            map.put(submissionMetaData, submissionMetaData.displayName);
         }
         return map;
     }
