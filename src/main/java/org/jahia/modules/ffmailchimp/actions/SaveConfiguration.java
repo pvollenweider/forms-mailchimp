@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.jahia.api.Constants;
 import org.jahia.bin.Action;
 import org.jahia.bin.ActionResult;
 import org.jahia.services.content.JCRNodeWrapper;
@@ -30,20 +29,20 @@ public class SaveConfiguration extends Action {
 
         final JCRNodeWrapper siteNode = resource.getNode();
         final JCRNodeWrapper formFactoryFolder;
-        if (!siteNode.hasNode("formFactory")) {
-            formFactoryFolder = siteNode.addNode("formFactory", "fcnt:formFactory");
+        if (!siteNode.hasNode(Constants.NODE_FORM_FACTORY)) {
+            formFactoryFolder = siteNode.addNode(Constants.NODE_FORM_FACTORY, Constants.NT_FORM_FACTORY);
             session.save();
         } else {
-            formFactoryFolder = siteNode.getNode("formFactory");
+            formFactoryFolder = siteNode.getNode(Constants.NODE_FORM_FACTORY);
         }
-        if (!formFactoryFolder.isNodeType("fcmix:mailchimpConfiguration")) {
-            formFactoryFolder.addMixin("fcmix:mailchimpConfiguration");
+        if (!formFactoryFolder.isNodeType(Constants.MIX_MAILCHIMP_CONFIGURATION)) {
+            formFactoryFolder.addMixin(Constants.MIX_MAILCHIMP_CONFIGURATION);
         }
         final JCRNodeWrapper mailchimpConfigurationNode;
-        if (!formFactoryFolder.hasNode("mailchimpConfiguration")) {
-            mailchimpConfigurationNode = formFactoryFolder.addNode("mailchimpConfiguration", "fcnt:mailchimpConfiguration");
+        if (!formFactoryFolder.hasNode(Constants.NODE_MAILCHIMP_CONFIGURATION)) {
+            mailchimpConfigurationNode = formFactoryFolder.addNode(Constants.NODE_MAILCHIMP_CONFIGURATION, Constants.NT_MAILCHIMP_CONFIGURATION);
         } else {
-            mailchimpConfigurationNode = formFactoryFolder.getNode("mailchimpConfiguration");
+            mailchimpConfigurationNode = formFactoryFolder.getNode(Constants.NODE_MAILCHIMP_CONFIGURATION);
         }
         for (Map.Entry<String, List<String>> entry : map.entrySet()) {
             String key = entry.getKey();
@@ -52,10 +51,10 @@ public class SaveConfiguration extends Action {
         session.save();
         final HashSet<String> languages = new HashSet<>();
         languages.add(LanguageCodeConverters.localeToLanguageTag(session.getLocale()));
-        publicationService.publishByMainId(formFactoryFolder.getIdentifier(), Constants.EDIT_WORKSPACE, Constants.LIVE_WORKSPACE, languages, false, null);
+        publicationService.publishByMainId(formFactoryFolder.getIdentifier(), org.jahia.api.Constants.EDIT_WORKSPACE, org.jahia.api.Constants.LIVE_WORKSPACE, languages, false, null);
         final JSONObject jsonAnswer = new JSONObject();
-        jsonAnswer.put("status", "success");
-        jsonAnswer.put("message", "Mailchimp configuration was saved successfully!");
+        jsonAnswer.put(Constants.ATTR_STATUS, Constants.VALUE_SUCCESS);
+        jsonAnswer.put(Constants.ATTR_MESSAGE, "Mailchimp configuration was saved successfully!");
         actionResult.setJson(jsonAnswer);
         return actionResult;
     }

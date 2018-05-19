@@ -3,6 +3,7 @@ package org.jahia.modules.ffmailchimp;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by stefan on 2017-02-13.
@@ -29,7 +30,7 @@ public enum SubmissionMetaData {
         return map;
     }
 
-    public static HashSet<String> getEnums() {
+    public static Set<String> getEnums() {
         if (values == null) {
             values = new HashSet<>();
             for (SubmissionMetaData submissionMetaData : SubmissionMetaData.values()) {

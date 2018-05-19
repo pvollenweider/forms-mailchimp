@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
+import org.jahia.modules.ffmailchimp.actions.Constants;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.decorator.JCRSiteNode;
 import org.jahia.services.content.nodetypes.ExtendedPropertyDefinition;
@@ -47,18 +47,18 @@ public class MailChimpInterestsInitializer implements ModuleChoiceListInitialize
         }
         try {
             final JCRSiteNode resolveSite = nodeWrapper.getResolveSite();
-            if (resolveSite.hasNode("formFactory") && resolveSite.getNode("formFactory").isNodeType("fcmix:mailchimpConfiguration")) {
-                final JCRNodeWrapper mailchimpConfiguration = resolveSite.getNode("formFactory").getNode("mailchimpConfiguration");
+            if (resolveSite.hasNode(Constants.NODE_FORM_FACTORY) && resolveSite.getNode(Constants.NODE_FORM_FACTORY).isNodeType(Constants.MIX_MAILCHIMP_CONFIGURATION)) {
+                final JCRNodeWrapper mailchimpConfiguration = resolveSite.getNode(Constants.NODE_FORM_FACTORY).getNode(Constants.NODE_MAILCHIMP_CONFIGURATION);
                 final String apiKey = mailchimpConfiguration.getPropertyAsString("apiKey");
                 final String listId = mailchimpConfiguration.getPropertyAsString("listId");
                 final String server = apiKey.substring(apiKey.indexOf('-') + 1, apiKey.length());
-                final String url = "https://" + server + ".api.mailchimp.com/3.0/lists/" + listId + "/interest-categories";
-                //Until release of Hotfixes
+                final String url = Constants.SCHEME_HTTPS + server + ".api.mailchimp.com/3.0/lists/" + listId + "/interest-categories";
+                // Until release of Hotfixes
                 final HttpResponse<JsonNode> response = Unirest.get(url)
                         .basicAuth(null, apiKey)
                         .queryString("count", "100")
                         .asJson();
-                //Prepare object for easy use.
+                // Prepare object for easy use.
                 final JSONObject jsonObject = response.getBody().getObject();
                 if (jsonObject != null) {
                     final JSONArray rawLists = jsonObject.getJSONArray("categories");
@@ -79,49 +79,6 @@ public class MailChimpInterestsInitializer implements ModuleChoiceListInitialize
                         }
                     }
                 }
-
-                /*if (extendedPropertyDefinition.getName().equals("category")) {
-                    HttpResponse<JsonNode> response = Unirest.get(url)
-                            .basicAuth(null, apiKey)
-                            .queryString("count", "100")
-                            .asJson();
-                    //Prepare object for easy use.
-                    JSONObject jsonObject = response.getBody().getObject();
-                    if (jsonObject != null) {
-                        JSONArray rawLists = jsonObject.getJSONArray("categories");
-                        for (int i = 0; i < rawLists.length(); i++) {
-                            JSONObject category = (JSONObject) rawLists.get(i);
-                            String mainCategoryName = category.getString("title");
-                            results.add(new ChoiceListValue(mainCategoryName, category.getString("id")));
-                        }
-                    }
-                } else if(map.containsKey("category")){
-                    HttpResponse<JsonNode> subCategories = Unirest.get(url + "/" + ((String) ((List) map.get("category")).get(0)) + "/interests")
-                            .basicAuth(null, apiKey)
-                            .queryString("count", "100")
-                            .asJson();
-                    JSONObject jsonObject2 = subCategories.getBody().getObject();
-                    if (jsonObject2 != null) {
-                        JSONArray rawLists2 = jsonObject2.getJSONArray("interests");
-                        for (int j = 0; j < rawLists2.length(); j++) {
-                            JSONObject subCategory = (JSONObject) rawLists2.get(j);
-                            results.add(new ChoiceListValue(subCategory.getString("name") + " (" + subCategory.getInt("subscriber_count") + " subscriber(s))", subCategory.getString("id")));
-                        }
-                    }
-                } else if(nodeWrapper.isNodeType("fcmix:mailchimpGroup") && nodeWrapper.hasProperty("category")){
-                    HttpResponse<JsonNode> subCategories = Unirest.get(url + "/" + nodeWrapper.getProperty("category").getString() + "/interests")
-                            .basicAuth(null, apiKey)
-                            .queryString("count", "100")
-                            .asJson();
-                    JSONObject jsonObject2 = subCategories.getBody().getObject();
-                    if (jsonObject2 != null) {
-                        JSONArray rawLists2 = jsonObject2.getJSONArray("interests");
-                        for (int j = 0; j < rawLists2.length(); j++) {
-                            JSONObject subCategory = (JSONObject) rawLists2.get(j);
-                            results.add(new ChoiceListValue(subCategory.getString("name") + " (" + subCategory.getInt("subscriber_count") + " subscriber(s))", subCategory.getString("id")));
-                        }
-                    }
-                }*/
             }
         } catch (UnirestException | RepositoryException | JSONException e) {
             LOGGER.error("Impossible to get choice list values", s);
