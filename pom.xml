@@ -88,6 +88,9 @@
                 <configuration>
                     <instructions>
                         <Jahia-Module-Priority>3</Jahia-Module-Priority>
+                        <Import-Package>org.jahia.modules.formfactory.taglib,
+                            ${jahia.plugin.projectPackageImport},
+                            *</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
