@@ -10,15 +10,15 @@
     <groupId>org.jahia.modules</groupId>
     <artifactId>ff-mailchimp</artifactId>
     <name>FF Mailchimp</name>
-    <version>1.1-SNAPSHOT</version>    
+    <version>1.0.1-SNAPSHOT</version>    
     <packaging>bundle</packaging>
     <description>This is the custom module (FF Mailchimp) for running on a Digital Experience Manager server.</description>
 
     <scm>
         <connection>scm:git:git@github.com:Jahia/ff-mailchimp.git</connection>
         <developerConnection>scm:git:git@github.com:Jahia/ff-mailchimp.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <properties>
         <jahia-depends>default,siteSettings,form-factory-core</jahia-depends>
