@@ -20,6 +20,17 @@
         <tag>HEAD</tag>
     </scm>
 
+    <distributionManagement>
+        <repository>
+            <id>jahia-community-releases</id>
+            <url>https://devtools.jahia.com/nexus/content/repositories/jahia-community-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>jahia-community-snapshots</id>
+            <url>https://devtools.jahia.com/nexus/content/repositories/jahia-community-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <properties>
         <jahia-depends>default,siteSettings,form-factory-core</jahia-depends>
     </properties>
