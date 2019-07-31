@@ -1,11 +1,11 @@
-# FF Mailchimp
+# Forms Mailchimp
 
 ### INFORMATION
-This module works with Form Factory and allows you to subscribe a member to the Mailchimp list associated with Form Factory.
+This module works with Forms and allows you to subscribe a member to the Mailchimp list associated with Forms.
 
 ### MINIMAL REQUIREMENTS
-* DX 7.1.1.0
-* Form Factory 2.1.0
+* Jahia 7.3.0.1
+* Forms Core 3.0.0
 
 ### INSTALLATION
 Download the jar and deploy it on your instance then activate the module on the site you wish to use.

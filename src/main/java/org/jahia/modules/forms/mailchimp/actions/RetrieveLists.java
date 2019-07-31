@@ -1,4 +1,4 @@
-package org.jahia.modules.ffmailchimp.actions;
+package org.jahia.modules.forms.mailchimp.actions;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;

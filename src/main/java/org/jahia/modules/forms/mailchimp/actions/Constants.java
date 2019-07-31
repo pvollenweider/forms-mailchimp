@@ -1,4 +1,4 @@
-package org.jahia.modules.ffmailchimp.actions;
+package org.jahia.modules.forms.mailchimp.actions;
 
 /**
  *

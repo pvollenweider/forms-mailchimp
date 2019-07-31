@@ -1,4 +1,4 @@
-package org.jahia.modules.ffmailchimp.initializer;
+package org.jahia.modules.forms.mailchimp.initializer;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.jcr.RepositoryException;
-import org.jahia.modules.ffmailchimp.actions.Constants;
+import org.jahia.modules.forms.mailchimp.actions.Constants;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.decorator.JCRSiteNode;
 import org.jahia.services.content.nodetypes.ExtendedPropertyDefinition;

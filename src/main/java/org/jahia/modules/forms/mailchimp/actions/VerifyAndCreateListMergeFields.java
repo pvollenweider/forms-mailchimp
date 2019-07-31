@@ -1,4 +1,4 @@
-package org.jahia.modules.ffmailchimp.actions;
+package org.jahia.modules.forms.mailchimp.actions;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.jahia.modules.ffmailchimp.SubmissionMetaData;
+import org.jahia.modules.forms.mailchimp.SubmissionMetaData;
 import org.jahia.services.scheduler.BackgroundJob;
 import org.json.JSONArray;
 import org.json.JSONException;

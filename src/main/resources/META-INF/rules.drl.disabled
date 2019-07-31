@@ -1,4 +1,4 @@
-package org.jahia.modules.ffmailchimp.rules
+package org.jahia.modules.forms.mailchimp.rules
 
 // list any import classes here.
 import org.jahia.services.content.rules.*

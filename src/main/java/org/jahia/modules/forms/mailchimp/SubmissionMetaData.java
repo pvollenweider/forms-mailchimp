@@ -1,4 +1,4 @@
-package org.jahia.modules.ffmailchimp;
+package org.jahia.modules.forms.mailchimp;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;

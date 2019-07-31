@@ -1,4 +1,4 @@
-package org.jahia.modules.ffmailchimp.actions;
+package org.jahia.modules.forms.mailchimp.actions;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -16,7 +16,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.jahia.bin.Action;
 import org.jahia.bin.ActionResult;
-import org.jahia.modules.ffmailchimp.SubmissionMetaData;
+import org.jahia.modules.forms.mailchimp.SubmissionMetaData;
 import org.jahia.services.content.*;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.render.Resource;
