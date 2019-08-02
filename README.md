@@ -13,6 +13,3 @@ Download the jar and deploy it on your instance then activate the module on the 
 ### WHAT DOES THIS MODULE DO?
 It brings the possibility to create a mapping between the data of a form and Mailchimp.
 It allows you to subscribe a member.
-
-### HOW TO USE IT?
-
