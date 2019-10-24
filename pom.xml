@@ -9,14 +9,14 @@
     </parent>
     <artifactId>forms-mailchimp</artifactId>
     <name>Forms Mailchimp</name>
-    <version>1.1.0</version>
+    <version>1.1.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>Forms Mailchimp is an addon module for Forms Core running on a Jahia server.</description>
 
     <scm>
         <connection>scm:git:git@github.com:Jahia/forms-mailchimp.git</connection>
         <developerConnection>scm:git:git@github.com:Jahia/forms-mailchimp.git</developerConnection>
-        <tag>1_1_0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
