@@ -46,6 +46,9 @@ public class RetrieveLists extends Action {
                 final HttpResponse<JsonNode> response = Unirest.get(entryPointSb.toString())
                         .basicAuth(null, apiKey)
                         .queryString("fields", Constants.ATTR_LISTS)
+                        .queryString("count", "100")
+                        .queryString("sort_field", "date_created")
+                        .queryString("sort_dir", "DESC")
                         .asJson();
                 // Prepare object for easy use.
                 final JSONObject results = response.getBody().getObject();
