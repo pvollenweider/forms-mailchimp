@@ -14,8 +14,8 @@
     <description>Forms Mailchimp is an addon module for Forms Core running on a Jahia server.</description>
 
     <scm>
-        <connection>scm:git:git@github.com:Jahia/forms-mailchimp.git</connection>
-        <developerConnection>scm:git:git@github.com:Jahia/forms-mailchimp.git</developerConnection>
+        <connection>scm:git:git@github.com:pvollenweider/forms-mailchimp.git</connection>
+        <developerConnection>scm:git:git@github.com:pvollenweider/forms-mailchimp.git</developerConnection>
         <tag>forms-mailchimp-1.1.0</tag>
     </scm>
 
