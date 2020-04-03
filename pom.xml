@@ -15,8 +15,8 @@
     <description>This is the custom module (FF Mailchimp) for running on a Digital Experience Manager server.</description>
 
     <scm>
-        <connection>scm:git:git@github.com:Jahia/ff-mailchimp.git</connection>
-        <developerConnection>scm:git:git@github.com:Jahia/ff-mailchimp.git</developerConnection>
+        <connection>scm:git:git@github.com:pvollenweider/ff-mailchimp.git</connection>
+        <developerConnection>scm:git:git@github.com:pvollenweider/ff-mailchimp.git</developerConnection>
         <tag>1_0_1</tag>
     </scm>
 
