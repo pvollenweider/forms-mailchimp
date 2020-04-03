@@ -32,13 +32,13 @@
     </distributionManagement>
 
     <properties>
-        <jahia-depends>default,siteSettings,form-factory-core</jahia-depends>
+        <jahia-depends>default,siteSettings,forms-core</jahia-depends>
     </properties>
     <dependencies>
         <dependency>
             <groupId>org.jahia.modules</groupId>
-            <artifactId>form-factory-core</artifactId>
-            <version>2.1.0</version>
+            <artifactId>forms-core</artifactId>
+            <version>2.4.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -66,18 +66,6 @@
             <name>Jahia Public Repository</name>
             <url>https://devtools.jahia.com/nexus/content/groups/public</url>
         </repository>
-        <repository>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>form-factory</id>
-            <name>Form Factory Repository</name>
-            <url>https://devtools.jahia.com/nexus/content/repositories/form-factory-releases</url>
-        </repository>
     </repositories>
     <build>
         <plugins>
@@ -88,7 +76,7 @@
                 <configuration>
                     <instructions>
                         <Jahia-Module-Priority>3</Jahia-Module-Priority>
-                        <Import-Package>org.jahia.modules.formfactory.taglib,
+                        <Import-Package>org.jahia.modules.forms.taglib,
                             ${jahia.plugin.projectPackageImport},
                             *</Import-Package>
                     </instructions>
